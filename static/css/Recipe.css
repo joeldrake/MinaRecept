@@ -1,0 +1,44 @@
+.recipeWrapper {
+}
+
+.recipeImage {
+  width: 100%;
+  padding-top: 65%;
+  background-color: rgba(0, 0, 0, 0.1);
+  background-size: cover;
+  background-position: center;
+}
+
+.recipeText {
+  padding: 20px;
+}
+
+.recipeSubHeadline {
+  margin-top: 20px;
+  margin-bottom: 10px;
+  font-size: 1.5em;
+  font-style: normal;
+  font-weight: bold;
+}
+
+.ingredients {
+  margin-bottom: 30px;
+}
+
+.recipe ul,
+.recipe ol {
+  margin-top: 0;
+  margin-bottom: 10px;
+}
+
+li {
+  padding: 10px 0;
+}
+
+li.headline {
+  cursor: default;
+  font-weight: bold;
+  list-style-type: none;
+  min-height: 1px;
+  margin-left: -20px;
+}

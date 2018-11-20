@@ -1,0 +1,55 @@
+:root {
+  --textColor: #222222;
+  --lightGrey: #f9f7f7;
+  --lightThemeColor: #f2eee9;
+  --heavyThemeColor: #928f8a;
+  --linkColor: #0073e0;
+}
+
+.menuBtn {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  padding: 0;
+  display: block;
+  width: 30px;
+  height: 30px;
+  border-radius: 100%;
+  background-color: var(--lightThemeColor);
+  border: 1px solid var(--lightThemeColor);
+  overflow: hidden;
+}
+
+.menuBtnImg {
+  width: 100%;
+}
+
+.menuWrapper {
+  z-index: 10;
+  position: absolute;
+  width: calc(100% - 40px);
+  max-width: 200px;
+  top: 60px;
+  right: 20px;
+  transform-origin: top right;
+  background-color: var(--lightThemeColor);
+  color: var(--textColor);
+  border-radius: 4px;
+  padding: 10px;
+  box-shadow: 0px 10px 20px -5px rgba(0, 0, 0, 0.4);
+  text-align: center;
+  padding-bottom: 30px;
+}
+
+.menuWrapper:after {
+  z-index: 9;
+  content: '';
+  position: absolute;
+  display: block;
+  top: -3px;
+  right: 7px;
+  width: 16px;
+  height: 16px;
+  transform: rotate(45deg);
+  background-color: var(--lightThemeColor);
+}

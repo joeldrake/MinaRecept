@@ -1,0 +1,84 @@
+:root {
+  --textColor: #222222;
+  --lightThemeColor: #f2eee9;
+  --heavyThemeColor: #928f8a;
+  --linkColor: #0073e0;
+}
+
+.recipeWrapper {
+  position: relative;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.backBtn {
+  position: absolute;
+  top: 5px;
+  left: 5px;
+  padding: 5px 10px;
+  color: var(--textColor);
+  background: var(--lightThemeColor);
+  text-decoration: none;
+}
+
+.recipeImage {
+  width: 100%;
+  background-color: rgba(0, 0, 0, 0.1);
+  background-size: cover;
+  background-position: center;
+  height: 300px;
+}
+
+.recipeContent {
+  padding: 20px;
+}
+
+.recipeContent h1 {
+  margin-top: 10px;
+}
+
+.recipeSubHeadline {
+  margin-top: 4px;
+  margin-bottom: 10px;
+  font-size: 1.5em;
+  font-style: normal;
+  font-weight: bold;
+}
+
+.recipe ul,
+.recipe ol {
+  margin-top: 0;
+  margin-bottom: 10px;
+}
+
+li {
+  padding: 10px 0;
+}
+
+li.headline {
+  cursor: default;
+  font-weight: bold;
+  margin-top: 20px;
+  min-height: 40px;
+}
+
+.recipeIngredientsStepsWrapper {
+  margin-top: 30px;
+}
+
+@media screen and (min-width: 600px) {
+  .recipeSubHeadline {
+    margin-top: 4px;
+  }
+  .recipeIngredientsStepsWrapper {
+    display: flex;
+    align-items: flex-start;
+  }
+  .recipeIngredientsStepsWrapper .recipeIngredientsWrapper {
+    width: 45%;
+  }
+
+  .recipeIngredientsStepsWrapper .recipeStepsWrapper {
+    width: 55%;
+  }
+}

@@ -1,0 +1,101 @@
+:root {
+  --textColor: #222222;
+  --lightThemeColor: #f2eee9;
+  --heavyThemeColor: #928f8a;
+  --linkColor: #0073e0;
+}
+
+.recipeIngredientsWrapper {
+  position: relative;
+  background-color: var(--lightThemeColor);
+  padding: 15px 15px;
+}
+
+.ingredients {
+  margin-bottom: 30px;
+}
+
+.recipeIngredientsList {
+  margin: 0;
+  padding: 0;
+}
+
+.ingredient,
+.ingredientEdit {
+  margin: 0;
+  display: flex;
+  border-bottom: 1px dashed var(--heavyThemeColor);
+}
+
+.noBorder {
+  border: 0;
+}
+
+.ingredient:last-child {
+  border-bottom: 0;
+}
+
+.ingredient.headline {
+  border-bottom: 0;
+}
+
+.ingredient span:nth-child(1) {
+  width: 45%;
+  margin-right: 7px;
+}
+
+.ingredient span:nth-child(2) {
+  width: 55%;
+  font-weight: bold;
+}
+
+.ingredientEdit {
+  position: relative;
+}
+
+.removeIngredientBtn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  right: 0;
+  z-index: 3;
+}
+
+.ingredientEdit input {
+  width: 100%;
+  padding: 10px 5px;
+  border: 0;
+  font-size: 16px;
+  font-family: 'Courier New', 'Courier', 'monospace';
+}
+
+.ingredientEdit .input-amount {
+  width: 25%;
+}
+
+.ingredientEdit .input-unit {
+  width: 52%;
+}
+
+.ingredientEdit .input-what {
+  width: 100%;
+  font-weight: bold;
+}
+
+.recipeIngredrientsEditBtn,
+.addIngredientBtn {
+  float: right;
+}
+
+.addIngredientBtn {
+  margin-top: 5px;
+}
+.saveIngredientsBtn {
+  margin-top: 10px;
+}
+
+@media screen and (min-width: 600px) {
+  .recipeIngredientsWrapper {
+    margin: 0 30px 20px 0;
+  }
+}

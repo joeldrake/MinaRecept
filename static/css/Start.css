@@ -1,0 +1,32 @@
+:root {
+  --textColor: #222222;
+  --linkColor: #0073e0;
+  --lightGrey: #f4f4f4;
+}
+
+.recipeLink {
+  position: relative;
+  font-size: 1.2em;
+  max-width: 100%;
+  display: flex;
+  flex-direction: row;
+  background: transparent;
+  margin: 30px 0;
+  background: #fff;
+}
+
+.recipeLinkImage {
+  position: relative;
+  width: 150px;
+  min-width: 150px;
+
+  height: 110px;
+  background-size: cover;
+  background-position: center;
+  border-radius: 2px;
+  background-color: var(--linkColor);
+}
+
+.recipeLinkText {
+  padding-left: 100px;
+}

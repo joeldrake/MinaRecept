@@ -1,0 +1,103 @@
+:root {
+  --textColor: #222222;
+  --lightThemeColor: #f2eee9;
+  --heavyThemeColor: #928f8a;
+  --linkColor: #0073e0;
+}
+
+.stepEdit {
+  position: relative;
+}
+
+.removeStepBtn {
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  z-index: 3;
+}
+
+.recipeStepsWrapper {
+  padding: 10px 0;
+}
+
+.recipeSteps {
+  counter-reset: item;
+  list-style-type: decimal;
+  padding-left: 20px;
+}
+
+.recipeStepsEditBtn,
+.addStepBtn {
+  float: right;
+}
+
+.recipeSteps > li {
+  border-left: 1px dashed var(--heavyThemeColor);
+  cursor: pointer;
+  display: block;
+
+  padding: 0 20px 30px 27px;
+}
+
+.recipeSteps > li > * {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.recipeSteps > li:before {
+  background-color: #ffffff;
+  border: 1px solid var(--heavyThemeColor);
+  border-radius: 100%;
+  color: var(--heavyThemeColor);
+  content: counter(item) ' ';
+  counter-increment: item;
+  margin: 0 10px 0 -41px;
+  transform: translateY(-4px);
+  text-align: center;
+  width: 25px;
+  height: 25px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  float: left;
+}
+
+.recipeSteps > li:last-child {
+  border-left: 0;
+  padding-bottom: 0;
+  padding-top: 0;
+}
+
+.recipeSteps > li.checked:before {
+  background: var(--heavyThemeColor);
+  color: #fff;
+}
+
+.recipeSteps > li.checked {
+  border-left-style: solid;
+}
+
+.recipeSteps > li.checked > * {
+  opacity: 0.3;
+  /*
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  */
+}
+
+.saveStepsBtn {
+  margin-top: 5px;
+}
+
+.stepEditTextArea {
+  width: 100%;
+  min-height: 7em;
+  max-height: 50vh;
+  padding: 10px 5px;
+  font-size: 16px;
+  border-radius: 4px;
+  border-color: var(--heavyThemeColor);
+  font-family: 'Courier New', 'Courier', 'monospace';
+  resize: vertical;
+}

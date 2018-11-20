@@ -1,0 +1,64 @@
+:root {
+  --textColor: #222222;
+  --lightThemeColor: #f2eee9;
+  --heavyThemeColor: #928f8a;
+  --linkColor: #0073e0;
+}
+
+.btn {
+  position: relative;
+  padding: 10px 20px;
+  font-weight: normal;
+  text-align: center;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  line-height: 1.5em;
+  border: 0;
+  color: #fff;
+  background: var(--heavyThemeColor);
+  font-size: 13px;
+  border-radius: 25px;
+  transition: transform 0.05s, box-shadow 0.05s;
+  cursor: pointer;
+}
+
+.btnIcon {
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 35px;
+  height: 35px;
+  padding: 0;
+}
+
+.btnIcon img {
+  width: 45%;
+}
+
+.btnIcon:hover {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+.btnWhite {
+  background: #fff;
+  color: var(--heavyThemeColor);
+}
+
+.btn:active {
+  box-shadow: none;
+}
+
+.btn:focus {
+  outline: 0;
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.5);
+}
+
+.btn:hover {
+  color: #fff;
+  text-decoration: none;
+}
+
+.btnWhite:hover {
+  color: var(--heavyThemeColor);
+}
