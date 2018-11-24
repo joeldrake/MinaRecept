@@ -23,6 +23,10 @@ body {
   margin: 0 auto;
 }
 
+.addPadding {
+  padding: 20px;
+}
+
 .nice_text {
   white-space: pre-wrap;
   overflow: hidden;
@@ -35,12 +39,38 @@ a {
   color: var(--linkColor);
 }
 
+hr {
+  border: 0;
+  border-bottom: 1px solid var(--heavyThemeColor);
+}
+
+.flexSplit {
+  display: flex;
+  flex-direction: row;
+}
+
+.flexSplit > * {
+  flex: 1;
+  margin: 0 5px;
+}
+
+.flexSplit > *:first-child {
+  margin-left: 0;
+}
+
+.flexSplit > *:last-child {
+  margin-right: 0;
+}
+
 .layoutWrapper {
   position: relative;
+  padding-bottom: 50px;
 }
 
 *:focus {
   z-index: 1;
+  outline: 0;
+  box-shadow: 0 0 0 0.2rem rgba(0, 157, 255, 0.7);
 }
 
 ::placeholder {

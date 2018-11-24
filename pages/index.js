@@ -1,5 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
+import fb from './../lib/load-firebase.js';
+import { addedNewRecipe } from './../actions/recipeActions.js';
 import Layout from './../components/Layout.js';
 import Menu from './../components/Menu.js';
 import Link from 'next/link';
@@ -31,8 +33,53 @@ class Index extends React.Component {
     });
   }
 
+  handleAddRecipeClick = async () => {
+    const { legalCharacters, user } = this.props.store.session;
+
+    const title = prompt(`Ange namn på receptet`);
+
+    /*
+    console.log(!title.match(legalCharacters));
+    if (!title.match(legalCharacters)) {
+      //illegal characters used, bail out
+      alert(
+        `Du kan endast ha bokstäver och siffror i namnet. Var god försök igen med ett annat namn.`,
+      );
+      return false;
+    }
+    */
+
+    if (title && title !== `` && user && user.uid) {
+      const firebase = await fb();
+      const firestore = firebase.firestore();
+      const settings = { timestampsInSnapshots: true };
+      firestore.settings(settings);
+
+      let newRecipe = {
+        title,
+        public: false,
+        date: new Date(),
+        lastUpdated: new Date(),
+        owner: user.uid,
+      };
+
+      firestore
+        .collection(`recipes`)
+        .add(newRecipe)
+        .then(docRef => {
+          newRecipe.id = docRef.id;
+
+          this.props.dispatch(addedNewRecipe(newRecipe));
+        })
+        .catch(error => {
+          console.error('Error adding document: ', error);
+        });
+    }
+  };
+
   render() {
     const { data } = this.props.store.recipes;
+    const { isSignedIn, user } = this.props.store.session;
 
     let renderRecipes = data
       ? data.map((recipe, i) => {
@@ -81,12 +128,25 @@ class Index extends React.Component {
     return (
       <Layout>
         <div className={`widthWrapper`} style={{ position: 'relative' }}>
-          <h1 className={`firstPageHeadline`}>Mina recept</h1>
+          <h1 className={`firstPageHeadline addPadding`}>Mina recept</h1>
 
           <Menu />
         </div>
 
-        <div className={`recipesWrapper widthWrapper`}>{renderRecipes}</div>
+        <div className={`recipesWrapper addPadding widthWrapper`}>
+          {renderRecipes}
+        </div>
+
+        <div className={`widthWrapper addPadding`}>
+          {isSignedIn ? (
+            <button
+              onClick={this.handleAddRecipeClick}
+              className={`recipeAddBtn btn`}
+            >
+              Lägg till recept
+            </button>
+          ) : null}
+        </div>
       </Layout>
     );
   }

@@ -32,6 +32,8 @@ class MyApp extends App {
 
           const returnData = data.docs.map(recipe => {
             let recipeData = recipe.data();
+            recipeData.id = recipe.id;
+
             let fixedTitle = recipeData.title.replace(/ /g, '-').toLowerCase();
 
             if (ctx.query && ctx.query.id === fixedTitle) {

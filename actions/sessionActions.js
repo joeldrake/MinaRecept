@@ -1,3 +1,5 @@
+import { fetchPrivateRecipes } from './recipeActions.js';
+
 export function handleUserLogin(user) {
   return async (dispatch, getState) => {
     let userCollect = null;
@@ -26,6 +28,7 @@ export function handleUserLogin(user) {
       isSignedIn: isSignedIn,
       user: userCollect,
     });
-    //dispatch();
+
+    dispatch(fetchPrivateRecipes());
   };
 }

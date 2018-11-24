@@ -98,16 +98,24 @@ class Ingredients extends React.Component {
     const { editing } = this.state;
     const { friendlyNames } = this.props.store.layout;
     const { recipe } = this.props.store.selectedRecipe;
+    const { isSignedIn, user } = this.props.store.session;
     let { ingredients } = recipe;
+    if (!ingredients) {
+      ingredients = [];
+    }
 
     return (
       <div className="recipeIngredientsWrapper">
-        <button
-          onClick={this.handleEditClick}
-          className={`recipeIngredrientsEditBtn btn btnIcon`}
-        >
-          <img src={`/static/img/edit.svg`} />
-        </button>
+        {(isSignedIn && recipe.access && recipe.access.includes(user.uid)) ||
+        (user && user.admin) ? (
+          <button
+            onClick={this.handleEditClick}
+            className={`recipeIngredrientsEditBtn btn btnIcon`}
+          >
+            <img src={`/static/img/edit.svg`} />
+          </button>
+        ) : null}
+
         <h2 className="recipeSubHeadline nice_text">Ingredienser</h2>
 
         {editing ? (
@@ -207,27 +215,29 @@ class Ingredients extends React.Component {
             </Formik>
           </div>
         ) : (
-          <ul className="recipeIngredientsList">
-            {ingredients.map((ingredient, i) => {
-              const emptyLine =
-                ingredient.amount === '' &&
-                ingredient.unit === '' &&
-                ingredient.what === '';
-              return (
-                <li
-                  className={`ingredient` + (emptyLine ? ` noBorder` : ``)}
-                  key={i}
-                >
-                  <span className={`nice_text`}>
-                    {ingredient.amount}
-                    {` `}
-                    {ingredient.unit}
-                  </span>
+          <ul className={`recipeIngredientsList`}>
+            {ingredients
+              ? ingredients.map((ingredient, i) => {
+                  const emptyLine =
+                    ingredient.amount === '' &&
+                    ingredient.unit === '' &&
+                    ingredient.what === '';
+                  return (
+                    <li
+                      className={`ingredient` + (emptyLine ? ` noBorder` : ``)}
+                      key={i}
+                    >
+                      <span className={`nice_text`}>
+                        {ingredient.amount}
+                        {` `}
+                        {ingredient.unit}
+                      </span>
 
-                  <span className={`nice_text`}>{ingredient.what}</span>
-                </li>
-              );
-            })}
+                      <span className={`nice_text`}>{ingredient.what}</span>
+                    </li>
+                  );
+                })
+              : null}
           </ul>
         )}
       </div>

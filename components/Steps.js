@@ -5,6 +5,7 @@ import fb from './../lib/load-firebase.js';
 import { updateSelectedRecipe } from './../actions/recipeActions.js';
 import './../css/dragdrop.css';
 import './../css/btn.css';
+import './../css/form-control.css';
 import './../css/steps.css';
 
 class Steps extends React.Component {
@@ -110,16 +111,25 @@ class Steps extends React.Component {
   render() {
     const { editing } = this.state;
     const { recipe } = this.props.store.selectedRecipe;
-    const { steps } = recipe;
+    let { steps } = recipe;
+    if (!steps) {
+      steps = [];
+    }
+
+    const { isSignedIn, user } = this.props.store.session;
 
     return (
       <div className="recipeStepsWrapper">
-        <button
-          onClick={this.handleEditClick}
-          className={`recipeStepsEditBtn btn btnIcon`}
-        >
-          <img src={`/static/img/edit.svg`} />
-        </button>
+        {(isSignedIn && recipe.access && recipe.access.includes(user.uid)) ||
+        (user && user.admin) ? (
+          <button
+            onClick={this.handleEditClick}
+            className={`recipeStepsEditBtn btn btnIcon`}
+          >
+            <img src={`/static/img/edit.svg`} />
+          </button>
+        ) : null}
+
         <h2 className="recipeSubHeadline">Steg</h2>
 
         {editing ? (
@@ -155,16 +165,14 @@ class Steps extends React.Component {
                               key={i}
                             >
                               <textarea
-                                className={`stepEditTextArea`}
+                                className={`form-control stepEditTextArea`}
                                 onKeyPress={this.autosize}
                                 name={`steps[${i}][text]`}
                                 value={values.steps[i]['text'] || ''}
                                 onChange={handleChange}
                                 onBlur={handleBlur}
                                 key={`step${i}`}
-                              >
-                                {step.text}
-                              </textarea>
+                              />
 
                               <button
                                 type="button"
@@ -206,27 +214,29 @@ class Steps extends React.Component {
           </div>
         ) : (
           <ol className={`recipeSteps`}>
-            {steps.map((step, i) => {
-              let renderStep = '';
-              let addedClass = ``;
-              let canClick = true;
-              if (step.text) {
-                renderStep = step.text;
-              }
-              if (step.headline) {
-                //dont add click function if its a headline
-                addedClass += ` headline`;
-              }
-              return (
-                <li
-                  className={`step${addedClass}`}
-                  key={i}
-                  onClick={this.handleItemClick}
-                >
-                  <span>{renderStep}</span>
-                </li>
-              );
-            })}
+            {steps
+              ? steps.map((step, i) => {
+                  let renderStep = '';
+                  let addedClass = ``;
+                  let canClick = true;
+                  if (step.text) {
+                    renderStep = step.text;
+                  }
+                  if (step.headline) {
+                    //dont add click function if its a headline
+                    addedClass += ` headline`;
+                  }
+                  return (
+                    <li
+                      className={`step${addedClass}`}
+                      key={i}
+                      onClick={this.handleItemClick}
+                    >
+                      <span>{renderStep}</span>
+                    </li>
+                  );
+                })
+              : null}
           </ol>
         )}
       </div>

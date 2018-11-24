@@ -1,4 +1,5 @@
 import React from 'react';
+import { connect } from 'react-redux';
 import Head from './Head';
 import './../css/main.css';
 
@@ -18,4 +19,8 @@ class Layout extends React.Component {
   }
 }
 
-export default Layout;
+export default connect(store => {
+  return {
+    store,
+  };
+})(Layout);

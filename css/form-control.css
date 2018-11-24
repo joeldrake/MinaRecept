@@ -1,0 +1,43 @@
+:root {
+  --textColor: #222222;
+  --lightThemeColor: #f2eee9;
+  --heavyThemeColor: #928f8a;
+  --linkColor: #0073e0;
+}
+
+.form-control-wrapper .form-control {
+  margin-bottom: 10px;
+}
+
+.form-control-wrapper label {
+  display: block;
+}
+
+.form-control-wrapper .checkboxWrapper {
+  margin-bottom: 20px;
+}
+
+.form-control-wrapper hr {
+  margin-top: 20px;
+}
+
+.form-control {
+  width: 100%;
+  padding: 10px 5px;
+  font-size: 16px;
+  border-radius: 4px;
+  border: 1px solid var(--heavyThemeColor);
+  font-family: 'Courier New', 'Courier', 'monospace';
+  resize: vertical;
+}
+
+textarea.form-control {
+  min-height: 7em;
+  max-height: 50vh;
+  resize: vertical;
+}
+
+[type='color'].form-control {
+  min-height: 40px;
+  padding: 0;
+}

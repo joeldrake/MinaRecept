@@ -73,6 +73,15 @@ const Head = props => (
     />
     <meta property="og:image:width" content="1200" key="ogImageWidth" />
     <meta property="og:image:height" content="630" key="ogImageHeight" />
+
+    <script
+      dangerouslySetInnerHTML={{
+        __html: `
+        UPLOADCARE_LOCALE = 'sv';
+        UPLOADCARE_PUBLIC_KEY = '99f58d578341d2880ae3';
+    `,
+      }}
+    />
   </NextHead>
 );
 

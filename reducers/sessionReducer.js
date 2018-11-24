@@ -1,6 +1,7 @@
 const initialState = {
   isSignedIn: false,
   user: null,
+  legalCharacters: /^[0-9a-zA-Z&\såäöÅÄÖé\-,.:;_]*$/,
 };
 
 export default function session(state = initialState, action) {

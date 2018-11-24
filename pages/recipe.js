@@ -1,9 +1,18 @@
 import React from 'react';
 import { connect } from 'react-redux';
+import { Formik } from 'formik';
+import Router from 'next/router';
+import fb from './../lib/load-firebase.js';
+import { updateSelectedRecipe } from './../actions/recipeActions.js';
 import Layout from '../components/Layout.js';
 import Link from 'next/link';
 import Ingredients from '../components/Ingredients.js';
 import Steps from '../components/Steps.js';
+import Uploader from './../components/Uploader';
+//import { EditorState } from 'draft-js';
+//import { RichEditorExample } from './..//components/RichEditor';
+import './../css/form-control.css';
+import './../css/checkbox.css';
 import './../css/recipe.css';
 
 class Recipe extends React.Component {
@@ -16,20 +25,78 @@ class Recipe extends React.Component {
     };
   }
 
+  state = {
+    editing: false,
+  };
+
   /*
-  async componentDidMount() {
-    const firebase = await this.props.firebase();
-    console.log(firebase);
-    const firestore = firebase.auth();
-    console.log(firestore);
+  componentDidMount() {
+    let { recipe } = this.props.store.selectedRecipe;
+    if (recipe) {
+      recipe.editorState = EditorState.createEmpty();
+      this.props.dispatch({
+        type: `UPDATE_RECIPE`,
+        recipe: recipe,
+      });
+    }
   }
   */
 
-  render() {
-    const { recipe } = this.props.store.selectedRecipe;
+  handleEditClick = () => {
+    const { editing } = this.state;
+    this.setState({
+      editing: !editing,
+    });
+  };
 
-    let recipeImage = '';
-    let headerImage = '';
+  handleFormSubmit = async (values, actions) => {
+    let { recipe } = this.props.store.selectedRecipe;
+
+    const firebase = await fb();
+    const firestore = firebase.firestore();
+    const settings = { timestampsInSnapshots: true };
+    firestore.settings(settings);
+
+    values.lastUpdated = new Date();
+
+    const addToFirebase = values.recipe;
+
+    firestore
+      .collection(`recipes`)
+      .doc(recipe.id)
+      .update(addToFirebase)
+      .then(() => {
+        console.log('success');
+        actions.setSubmitting(false);
+
+        if (recipe.title !== values.recipe.title) {
+          let displayUrl = encodeURI(
+            values.recipe.title.replace(/ /g, '-').toLowerCase(),
+          );
+          Router.push(`/recipe?id=${displayUrl}`, `/${displayUrl}/`);
+        }
+
+        recipe = values.recipe;
+
+        this.props.dispatch(updateSelectedRecipe(recipe));
+
+        this.setState({
+          editing: false,
+        });
+      })
+      .catch(error => {
+        console.log('error', error);
+        actions.setSubmitting(false);
+      });
+  };
+
+  render() {
+    const { editing } = this.state;
+    const { recipe } = this.props.store.selectedRecipe;
+    const { isSignedIn, user } = this.props.store.session;
+
+    let recipeImage;
+    let headerImage;
     if (recipe.image) {
       let recipieImageUrl = recipe.image;
       headerImage = recipieImageUrl;
@@ -63,16 +130,222 @@ class Recipe extends React.Component {
 
           {recipeImage}
 
-          <div className={`recipeContent`}>
-            <h1>{recipe.title}</h1>
+          <div
+            className={`recipeContent`}
+            style={!recipeImage ? { paddingTop: '40px' } : null}
+          >
+            {(isSignedIn &&
+              recipe.access &&
+              recipe.access.includes(user.uid)) ||
+            (user && user.admin) ? (
+              <button
+                onClick={this.handleEditClick}
+                className={`recipeEditBtn btn btnIcon`}
+              >
+                <img src={`/static/img/edit.svg`} />
+              </button>
+            ) : null}
 
-            {recipe.text ? <p>{recipe.text}</p> : null}
+            {editing ? (
+              <Formik
+                initialValues={{ recipe }}
+                onSubmit={this.handleFormSubmit}
+              >
+                {({
+                  values,
+                  errors,
+                  touched,
+                  handleChange,
+                  setFieldValue,
+                  handleBlur,
+                  handleSubmit,
+                  isSubmitting,
+                }) => (
+                  <div>
+                    <h1>Redigerar {recipe.title}</h1>
+                    <form
+                      onSubmit={handleSubmit}
+                      className={`form-control-wrapper`}
+                    >
+                      <div>
+                        <label
+                          className={`checkboxWrapper`}
+                          tabIndex={`0`}
+                          onKeyPress={e => {
+                            if (e.key === 'Enter' || e.key === ' ') {
+                              values.recipe.public = !values.recipe.public;
+                              const input = e.target.children[0];
+                              input.checked = !input.checked;
+                            }
+                          }}
+                        >
+                          Offentligt
+                          <input
+                            type={`checkbox`}
+                            id={`recipe[public]`}
+                            checked={values.recipe.public || false}
+                            onChange={handleChange}
+                            onBlur={handleBlur}
+                            tabIndex={`-1`}
+                          />
+                          <span className="checkmark" />
+                        </label>
+                      </div>
+
+                      <label htmlFor={`recipe[image]`}>
+                        Bild (adress till valfri extern källa)
+                      </label>
+                      <input
+                        className={`form-control`}
+                        id={`recipe[image]`}
+                        autoComplete={`off`}
+                        value={values.recipe.image || ''}
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                        placeholder="https://valfriadress.se/bild.jpg"
+                      />
+
+                      <Uploader
+                        id={`uploadcareUploader`}
+                        name={`uploadcareUploader`}
+                        data-tabs={`file camera url`}
+                        data-crop={`free`}
+                        data-images-only
+                        onChange={promise => {
+                          promise.then(data => {
+                            console.log('File changed: ', data);
+                            values.recipe.image = data.cdnUrl;
+                          });
+                        }}
+                        onUploadComplete={data => {
+                          console.log('Upload completed:', data);
+                          values.recipe.image = data.cdnUrl;
+                        }}
+                      />
+
+                      <label
+                        htmlFor={`recipe[title]`}
+                        style={{ marginTop: '20px' }}
+                      >
+                        Titel
+                      </label>
+                      <input
+                        className={`form-control`}
+                        id={`recipe[title]`}
+                        value={values.recipe.title || ''}
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                      />
+
+                      <label htmlFor={`recipe[text]`}>Text</label>
+                      <textarea
+                        className={`form-control stepEditTextArea`}
+                        id={`recipe[text]`}
+                        value={values.recipe.text || ''}
+                        onChange={handleChange}
+                      />
+
+                      {/*
+                      <RichEditorExample
+                        editorState={recipe.editorState}
+                        onChange={setFieldValue}
+                        onBlur={handleBlur}
+                      />     
+                      */}
+
+                      <h3>Sätt egen färg på receptet</h3>
+                      <div className={`flexSplit`}>
+                        <div>
+                          <label htmlFor={`recipe['style'][color]`}>
+                            Textfärg
+                          </label>
+                          <input
+                            className={`form-control`}
+                            id={`recipe['style'][color]`}
+                            value={
+                              (values.recipe.style &&
+                                values.recipe.style.color) ||
+                              '#000000'
+                            }
+                            onChange={handleChange}
+                            onBlur={handleBlur}
+                            type={`color`}
+                          />
+                        </div>
+                        <div>
+                          <label htmlFor={`recipe['style'][background]`}>
+                            Bakgrundsfärg
+                          </label>
+                          <input
+                            className={`form-control`}
+                            id={`recipe['style'][background]`}
+                            value={
+                              (values.recipe.style &&
+                                values.recipe.style.background) ||
+                              '#f2eee9'
+                            }
+                            onChange={handleChange}
+                            onBlur={handleBlur}
+                            type={`color`}
+                          />
+                        </div>
+                      </div>
+
+                      <h3>Visa vem/var som receptet kommer från</h3>
+                      <div className={`flexSplit`}>
+                        <div>
+                          <label htmlFor={`recipe['cred']`}>Från</label>
+                          <input
+                            className={`form-control`}
+                            id={`recipe['cred']`}
+                            value={values.recipe.cred || ''}
+                            onChange={handleChange}
+                            onBlur={handleBlur}
+                          />
+                        </div>
+                        <div>
+                          <label htmlFor={`recipe['source']`}>Länk</label>
+                          <input
+                            className={`form-control`}
+                            id={`recipe['source']`}
+                            value={values.recipe.source || ''}
+                            onChange={handleChange}
+                            onBlur={handleBlur}
+                          />
+                        </div>
+                      </div>
+                      <button
+                        type={`submit`}
+                        className={`saveRecipeBtn btn`}
+                        disabled={isSubmitting}
+                      >
+                        {isSubmitting ? (
+                          <div className={`spinner onBtn`} />
+                        ) : null}
+                        Spara
+                      </button>
+                      <hr />
+                    </form>
+                  </div>
+                )}
+              </Formik>
+            ) : (
+              <div>
+                <h1>{recipe.title}</h1>
+
+                {recipe.text ? <p>{recipe.text}</p> : null}
+              </div>
+            )}
 
             <div className={`recipeIngredientsStepsWrapper`}>
-              {recipe.ingredients ? <Ingredients /> : null}
+              <Ingredients />
 
-              {recipe.steps ? <Steps /> : null}
+              <Steps />
             </div>
+
+            {recipe.cred ? <div>{recipe.cred}</div> : null}
+
+            {recipe.source ? <div>{recipe.source}</div> : null}
           </div>
         </div>
       </Layout>

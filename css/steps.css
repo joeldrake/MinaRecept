@@ -17,7 +17,7 @@
 }
 
 .recipeStepsWrapper {
-  padding: 10px 0;
+  padding: 15px 0;
 }
 
 .recipeSteps {
@@ -91,13 +91,5 @@
 }
 
 .stepEditTextArea {
-  width: 100%;
-  min-height: 7em;
-  max-height: 50vh;
-  padding: 10px 5px;
-  font-size: 16px;
-  border-radius: 4px;
-  border-color: var(--heavyThemeColor);
-  font-family: 'Courier New', 'Courier', 'monospace';
-  resize: vertical;
+  padding: 10px 30px 10px 5px;
 }

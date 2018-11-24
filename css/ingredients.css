@@ -8,7 +8,7 @@
 .recipeIngredientsWrapper {
   position: relative;
   background-color: var(--lightThemeColor);
-  padding: 15px 15px;
+  padding: 15px;
 }
 
 .ingredients {
@@ -80,6 +80,7 @@
 .ingredientEdit .input-what {
   width: 100%;
   font-weight: bold;
+  padding-right: 30px;
 }
 
 .recipeIngredrientsEditBtn,
