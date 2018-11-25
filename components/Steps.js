@@ -1,6 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { Formik, FieldArray } from 'formik';
+import Markdown from 'react-markdown';
 import fb from './../lib/load-firebase.js';
 import { updateSelectedRecipe } from './../actions/recipeActions.js';
 import './../css/dragdrop.css';
@@ -232,7 +233,9 @@ class Steps extends React.Component {
                       key={i}
                       onClick={this.handleItemClick}
                     >
-                      <span>{renderStep}</span>
+                      <div className={`stepMarkdownWrapper`}>
+                        <Markdown source={renderStep} />
+                      </div>
                     </li>
                   );
                 })

@@ -82,6 +82,7 @@ const Head = props => (
     `,
       }}
     />
+    <script defer src="https://use.fontawesome.com/releases/v5.5.0/js/all.js" />
   </NextHead>
 );
 

@@ -93,3 +93,8 @@
 .stepEditTextArea {
   padding: 10px 30px 10px 5px;
 }
+
+.stepMarkdownWrapper p {
+  padding: 0;
+  margin: 0;
+}

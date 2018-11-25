@@ -2,6 +2,25 @@ import Router from 'next/router';
 import fb from './../lib/load-firebase.js';
 import { unionBy } from 'lodash';
 
+export function deleteSelectedRecipe(recipe) {
+  return async (dispatch, getState) => {
+    if (recipe) {
+      let recipes = getState().recipes.data;
+
+      const updatedRecipes = recipes.filter(r => {
+        return recipe.id !== r.id;
+      });
+
+      dispatch({
+        type: `UPDATE_RECIPES`,
+        data: updatedRecipes,
+      });
+
+      Router.push(`/`);
+    }
+  };
+}
+
 export function addedNewRecipe(recipe) {
   return async (dispatch, getState) => {
     if (recipe) {
@@ -78,6 +97,51 @@ export function fetchPrivateRecipes() {
     dispatch({
       type: `UPDATE_RECIPES`,
       data: mergedRecipes,
+    });
+  };
+}
+
+export function fetchPublicRecipes(query) {
+  return async (dispatch, getState) => {
+    const firebase = await fb();
+    const firestore = firebase.firestore();
+
+    const settings = {
+      timestampsInSnapshots: true,
+    };
+    firestore.settings(settings);
+
+    let recipes = await firestore
+      .collection(`recipes`)
+      .where('public', '==', true)
+      .orderBy(`date`, `asc`)
+      .get()
+      .then(data => {
+        //var source = data.metadata.fromCache ? 'local cache' : 'server';
+        //console.log('Data came from ' + source);
+
+        const returnData = data.docs.map(recipe => {
+          let recipeData = recipe.data();
+          recipeData.id = recipe.id;
+
+          let fixedTitle = recipeData.title.replace(/ /g, '-').toLowerCase();
+
+          if (query && query.id === fixedTitle) {
+            dispatch({
+              type: `UPDATE_RECIPE`,
+              recipe: recipeData,
+            });
+          }
+
+          return recipeData;
+        });
+
+        return returnData;
+      });
+
+    dispatch({
+      type: `UPDATE_RECIPES`,
+      data: recipes,
     });
   };
 }

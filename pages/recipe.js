@@ -1,16 +1,20 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { Formik } from 'formik';
+import Markdown from 'react-markdown';
 import Router from 'next/router';
 import fb from './../lib/load-firebase.js';
-import { updateSelectedRecipe } from './../actions/recipeActions.js';
+import {
+  updateSelectedRecipe,
+  deleteSelectedRecipe,
+} from './../actions/recipeActions.js';
 import Layout from '../components/Layout.js';
 import Link from 'next/link';
 import Ingredients from '../components/Ingredients.js';
 import Steps from '../components/Steps.js';
 import Uploader from './../components/Uploader';
 //import { EditorState } from 'draft-js';
-//import { RichEditorExample } from './..//components/RichEditor';
+//import { RichEditorExample } from './../components/RichEditor';
 import './../css/form-control.css';
 import './../css/checkbox.css';
 import './../css/recipe.css';
@@ -90,9 +94,29 @@ class Recipe extends React.Component {
       });
   };
 
+  handleDelRecipeClick = async () => {
+    const userConfirmed = confirm('Vill du radera receptet?');
+    if (userConfirmed) {
+      let { recipe } = this.props.store.selectedRecipe;
+
+      const firebase = await fb();
+      const firestore = firebase.firestore();
+      const settings = { timestampsInSnapshots: true };
+      firestore.settings(settings);
+
+      firestore
+        .collection(`recipes`)
+        .doc(recipe.id)
+        .delete()
+        .then(() => {
+          this.props.dispatch(deleteSelectedRecipe(recipe));
+        });
+    }
+  };
+
   render() {
     const { editing } = this.state;
-    const { recipe } = this.props.store.selectedRecipe;
+    let { recipe } = this.props.store.selectedRecipe;
     const { isSignedIn, user } = this.props.store.session;
 
     let recipeImage;
@@ -245,14 +269,6 @@ class Recipe extends React.Component {
                         onChange={handleChange}
                       />
 
-                      {/*
-                      <RichEditorExample
-                        editorState={recipe.editorState}
-                        onChange={setFieldValue}
-                        onBlur={handleBlur}
-                      />     
-                      */}
-
                       <h3>Sätt egen färg på receptet</h3>
                       <div className={`flexSplit`}>
                         <div>
@@ -324,6 +340,16 @@ class Recipe extends React.Component {
                         ) : null}
                         Spara
                       </button>
+
+                      <button
+                        type={`button`}
+                        className={`delRecipeBtn btn btnDanger`}
+                        onClick={this.handleDelRecipeClick}
+                      >
+                        Radera recept
+                      </button>
+
+                      <div className={`clearfix`} />
                       <hr />
                     </form>
                   </div>
@@ -333,7 +359,7 @@ class Recipe extends React.Component {
               <div>
                 <h1>{recipe.title}</h1>
 
-                {recipe.text ? <p>{recipe.text}</p> : null}
+                {recipe.text ? <Markdown source={recipe.text} /> : null}
               </div>
             )}
 
@@ -345,7 +371,13 @@ class Recipe extends React.Component {
 
             {recipe.cred ? <div>{recipe.cred}</div> : null}
 
-            {recipe.source ? <div>{recipe.source}</div> : null}
+            {recipe.source ? (
+              <div>
+                <a href={recipe.source} target={`_blank`}>
+                  {recipe.source}
+                </a>
+              </div>
+            ) : null}
           </div>
         </div>
       </Layout>
