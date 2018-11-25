@@ -2,6 +2,7 @@ let recipe = {};
 
 const initialState = {
   recipe,
+  privateLoaded: false,
 };
 
 export default function selectedRecipe(state = initialState, action) {
@@ -10,6 +11,11 @@ export default function selectedRecipe(state = initialState, action) {
       return {
         ...state,
         recipe: action.recipe,
+      };
+    case 'PRIVATE_LOADED':
+      return {
+        ...state,
+        privateLoaded: action.privateLoaded,
       };
     default:
       return state;

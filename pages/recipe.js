@@ -116,7 +116,7 @@ class Recipe extends React.Component {
 
   render() {
     const { editing } = this.state;
-    let { recipe } = this.props.store.selectedRecipe;
+    let { recipe, privateLoaded } = this.props.store.selectedRecipe;
     const { isSignedIn, user } = this.props.store.session;
 
     let recipeImage;
@@ -137,6 +137,19 @@ class Recipe extends React.Component {
             backgroundImage: `url(${recipieImageUrl})`,
           }}
         />
+      );
+    }
+
+    if (privateLoaded && !recipe.id) {
+      return (
+        <Layout>
+          <div className="recipeWrapper">
+            <Link href="/">
+              <a className="backBtn">Gå till startsidan</a>
+            </Link>
+            <h1 style={{ padding: '50px 20px' }}>Kunde ej hitta recept...</h1>
+          </div>
+        </Layout>
       );
     }
 

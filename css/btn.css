@@ -7,6 +7,7 @@
 
 .btn {
   position: relative;
+  display: inline-block;
   padding: 10px 20px;
   font-weight: normal;
   text-align: center;
@@ -20,6 +21,7 @@
   border-radius: 25px;
   transition: transform 0.05s, box-shadow 0.05s;
   cursor: pointer;
+  text-decoration: none;
 }
 
 .btnIcon {

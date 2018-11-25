@@ -2,6 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import posed, { PoseGroup } from 'react-pose';
 import fb from './../lib/load-firebase.js';
+import './../css/btn.css';
 import './../css/menu.css';
 
 const MenuContainer = posed.div({

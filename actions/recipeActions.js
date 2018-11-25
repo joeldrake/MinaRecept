@@ -98,6 +98,10 @@ export function fetchPrivateRecipes() {
       type: `UPDATE_RECIPES`,
       data: mergedRecipes,
     });
+    dispatch({
+      type: `PRIVATE_LOADED`,
+      privateLoaded: true,
+    });
   };
 }
 
