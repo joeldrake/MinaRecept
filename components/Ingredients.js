@@ -20,7 +20,7 @@ class Ingredients extends React.Component {
   };
 
   handleFormSubmit = async (values, actions) => {
-    let { recipe } = this.props.store.selectedRecipe;
+    let { selectedRecipe } = this.props.store.recipes;
 
     const firebase = await fb();
     const firestore = firebase.firestore();
@@ -34,15 +34,15 @@ class Ingredients extends React.Component {
 
     firestore
       .collection(`recipes`)
-      .doc(recipe.id)
+      .doc(selectedRecipe.id)
       .update(addToFirebase)
       .then(() => {
         console.log('success');
         actions.setSubmitting(false);
 
-        recipe.ingredients = values.ingredients;
+        selectedRecipe.ingredients = values.ingredients;
 
-        this.props.dispatch(updateSelectedRecipe(recipe));
+        this.props.dispatch(updateSelectedRecipe(selectedRecipe));
 
         this.setState({
           editing: false,
@@ -97,16 +97,18 @@ class Ingredients extends React.Component {
   render() {
     const { editing } = this.state;
     const { friendlyNames } = this.props.store.layout;
-    const { recipe } = this.props.store.selectedRecipe;
+    const { selectedRecipe } = this.props.store.recipes;
     const { isSignedIn, user } = this.props.store.session;
-    let { ingredients } = recipe;
+    let { ingredients } = selectedRecipe;
     if (!ingredients) {
       ingredients = [];
     }
 
     return (
       <div className="recipeIngredientsWrapper">
-        {(isSignedIn && recipe.access && recipe.access.includes(user.uid)) ||
+        {(isSignedIn &&
+          selectedRecipe.access &&
+          selectedRecipe.access.includes(user.uid)) ||
         (user && user.admin) ? (
           <button
             onClick={this.handleEditClick}

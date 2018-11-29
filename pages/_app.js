@@ -2,16 +2,24 @@ import React from 'react';
 import { Provider } from 'react-redux';
 import App, { Container } from 'next/app';
 import withRedux from 'next-redux-wrapper';
-import { handleUserLogin } from './../actions/sessionActions.js';
-import { fetchPublicRecipes } from './../actions/recipeActions.js';
+import { handleUserAuthChanged } from './../actions/sessionActions.js';
+import { fetchRecipe, fetchPublicRecipes } from './../actions/recipeActions.js';
 import { initStore } from './../lib/store.js';
 import fb from './../lib/load-firebase.js';
 
 class MyApp extends App {
   static async getInitialProps({ Component, ctx }) {
     if (ctx && ctx.req && ctx.res) {
+      console.log(ctx.query);
       //this is serverside
-      await ctx.store.dispatch(fetchPublicRecipes(ctx.query));
+
+      if (ctx.query && ctx.query.id) {
+        //user is on a recipie page
+        await ctx.store.dispatch(fetchRecipe(ctx.query.id));
+        //await ctx.store.dispatch(fetchPublicRecipes(ctx.query));
+      } else {
+        await ctx.store.dispatch(fetchPublicRecipes());
+      }
     }
 
     const pageProps = Component.getInitialProps
@@ -24,6 +32,11 @@ class MyApp extends App {
   }
 
   componentDidMount() {
+    //check if public recipes has been loaded server side. If not, load them.
+    const { publicRecipes } = this.props.store.getState().recipes;
+    if (!publicRecipes.length) {
+      this.props.store.dispatch(fetchPublicRecipes());
+    }
     /*
     //Firebase facebook login redirect did not like this service worker
     if (
@@ -43,7 +56,7 @@ class MyApp extends App {
     const auth = firebase.auth();
 
     this.unregisterAuthObserver = auth.onAuthStateChanged(user => {
-      this.props.store.dispatch(handleUserLogin(user));
+      this.props.store.dispatch(handleUserAuthChanged(user));
     });
   }
 

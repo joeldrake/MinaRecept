@@ -1,7 +1,8 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import fb from './../lib/load-firebase.js';
-import { addedNewRecipe } from './../actions/recipeActions.js';
+import { addedNewRecipe, addNewRecipe } from './../actions/recipeActions.js';
+import { makePermalink } from './../lib/functions.js';
 import Layout from './../components/Layout.js';
 import Menu from './../components/Menu.js';
 import Link from 'next/link';
@@ -20,78 +21,27 @@ class Index extends React.Component {
   async componentDidMount() {
     //clear selected recipe data
     this.props.dispatch({
-      type: `UPDATE_RECIPE`,
-      recipe: {},
+      type: `UPDATE_SELECTED_RECIPE`,
+      selectedRecipe: {},
     });
   }
 
-  handleRecipeClick(recipe) {
+  handleRecipeClick(selectedRecipe) {
     //set selected recipe data
     this.props.dispatch({
-      type: `UPDATE_RECIPE`,
-      recipe,
+      type: `UPDATE_SELECTED_RECIPE`,
+      selectedRecipe,
     });
   }
 
   handleAddRecipeClick = async () => {
-    const { legalCharacters, user } = this.props.store.session;
-
-    const title = prompt(`Ange namn på receptet`);
-
-    /*
-    console.log(!title.match(legalCharacters));
-    if (!title.match(legalCharacters)) {
-      //illegal characters used, bail out
-      alert(
-        `Du kan endast ha bokstäver och siffror i namnet. Var god försök igen med ett annat namn.`,
-      );
-      return false;
-    }
-    */
-
-    if (title && title !== `` && user && user.uid) {
-      const firebase = await fb();
-      const firestore = firebase.firestore();
-      const settings = { timestampsInSnapshots: true };
-      firestore.settings(settings);
-
-      let newRecipe = {
-        title,
-        public: false,
-        date: new Date(),
-        lastUpdated: new Date(),
-        owner: user.uid,
-      };
-
-      firestore
-        .collection(`recipes`)
-        .add(newRecipe)
-        .then(docRef => {
-          newRecipe.id = docRef.id;
-
-          this.props.dispatch(addedNewRecipe(newRecipe));
-        })
-        .catch(error => {
-          console.error('Error adding document: ', error);
-        });
-    }
+    this.props.dispatch(addNewRecipe());
   };
 
-  render() {
-    const { data } = this.props.store.recipes;
-    const { isSignedIn, user } = this.props.store.session;
-
-    let renderRecipes = data
-      ? data.map((recipe, i) => {
+  renderRecipes(recipes) {
+    return recipes
+      ? recipes.map((recipe, i) => {
           let addedStyle = {};
-
-          let displayUrl = encodeURI(
-            recipe.title.replace(/ /g, '-').toLowerCase(),
-          );
-
-          let queryID = encodeURIComponent(
-            recipe.title.replace(/ /g, '-').toLowerCase(),
-          );
 
           let hasImage;
           if (recipe.image && recipe.image !== '') {
@@ -105,7 +55,11 @@ class Index extends React.Component {
           }
 
           return (
-            <Link as={`/${displayUrl}/`} href={`/recipe?id=${queryID}`} key={i}>
+            <Link
+              as={`/${recipe.permalink}/`}
+              href={`/recipe?id=${recipe.permalink}`}
+              key={i}
+            >
               <a
                 className={`recipeLink`}
                 onClick={() => this.handleRecipeClick(recipe)}
@@ -122,30 +76,48 @@ class Index extends React.Component {
             </Link>
           );
         })
-      : '';
+      : null;
+  }
+
+  render() {
+    const { publicRecipes, usersRecipes } = this.props.store.recipes;
+    const { isSignedIn } = this.props.store.session;
+
+    const nonPublicRecipes = usersRecipes.filter(recipe => {
+      return recipe.public === false;
+    });
+
+    let renderedUsersRecipes = this.renderRecipes(nonPublicRecipes);
+
+    let renderedPublicRecipes = this.renderRecipes(publicRecipes);
 
     //todo: reupload and check cache
     return (
       <Layout>
-        <div className={`widthWrapper`} style={{ position: 'relative' }}>
-          <h1 className={`firstPageHeadline addPadding`}>Mina recept</h1>
-
+        <div
+          className={`widthWrapper addPadding`}
+          style={{ position: 'relative' }}
+        >
           <Menu />
-        </div>
+          <h1 className={`firstPageHeadline `}>Mina recept</h1>
 
-        <div className={`recipesWrapper addPadding widthWrapper`}>
-          {renderRecipes}
-        </div>
-
-        <div className={`widthWrapper addPadding`}>
           {isSignedIn ? (
-            <button
-              onClick={this.handleAddRecipeClick}
-              className={`recipeAddBtn btn`}
-            >
-              Lägg till recept
-            </button>
+            <div>
+              <h2>Dina icke publika recept</h2>
+              <div className={`recipesWrapper`}>{renderedUsersRecipes}</div>
+              <button
+                onClick={this.handleAddRecipeClick}
+                className={`recipeAddBtn btn`}
+              >
+                Lägg till recept
+              </button>
+            </div>
           ) : null}
+        </div>
+
+        <div className={`addPadding widthWrapper`}>
+          <h2>Offentliga recept</h2>
+          <div className={`recipesWrapper`}>{renderedPublicRecipes}</div>
         </div>
       </Layout>
     );

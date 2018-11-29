@@ -1,7 +1,10 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import posed, { PoseGroup } from 'react-pose';
-import fb from './../lib/load-firebase.js';
+import {
+  handleUserFacebookSignIn,
+  handleUserSignOut,
+} from './../actions/sessionActions.js';
 import './../css/btn.css';
 import './../css/menu.css';
 
@@ -64,34 +67,13 @@ class Menu extends React.Component {
 
   handleLogoutClick = async e => {
     e.preventDefault();
-
-    const firebase = await fb();
-    firebase
-      .auth()
-      .signOut()
-      .then(() => {
-        // Sign-out successful.
-        this.props.dispatch({
-          type: 'LOGOUT',
-        });
-      })
-      .catch(error => {
-        console.log(error);
-      });
+    this.props.dispatch(handleUserSignOut());
   };
 
   handleLoginClick = async e => {
     e.preventDefault();
 
-    const firebase = await fb();
-    const provider = new firebase.auth.FacebookAuthProvider();
-
-    firebase
-      .auth()
-      .signInWithRedirect(provider)
-      .catch(error => {
-        console.log(error);
-      });
+    this.props.dispatch(handleUserFacebookSignIn());
   };
 
   render() {

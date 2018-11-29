@@ -1,6 +1,3 @@
-let data = [];
-let tags = [];
-
 /*
 try {
     if(localStorage.recipes && localStorage.recipes !== ''){
@@ -17,21 +14,41 @@ try {
 */
 
 const initialState = {
-  data,
-  tags,
+  selectedRecipe: {},
+  selectedRecipeLoaded: false,
+  publicRecipes: [],
+  publicRecipesLoaded: false,
+  usersRecipes: [],
+  usersRecipesLoaded: false,
+  recipeTags: [],
+  recipeTagsLoaded: false,
 };
 
 export default function recipes(state = initialState, action) {
   switch (action.type) {
-    case 'UPDATE_RECIPES':
+    case 'UPDATE_SELECTED_RECIPE':
       return {
         ...state,
-        data: action.data,
+        selectedRecipe: action.selectedRecipe,
+        selectedRecipeLoaded: true,
       };
-    case 'UPDATE_TAGS':
+    case 'UPDATE_USERS_RECIPES':
       return {
         ...state,
-        tags: action.tags,
+        usersRecipes: action.usersRecipes,
+        usersRecipesLoaded: true,
+      };
+    case 'UPDATE_PUBLIC_RECIPES':
+      return {
+        ...state,
+        publicRecipes: action.publicRecipes,
+        publicRecipesLoaded: true,
+      };
+    case 'UPDATE_RECIPE_TAGS':
+      return {
+        ...state,
+        recipeTags: action.recipeTags,
+        recipeTagsLoaded: true,
       };
     default:
       return state;

@@ -13,6 +13,7 @@ import Link from 'next/link';
 import Ingredients from '../components/Ingredients.js';
 import Steps from '../components/Steps.js';
 import Uploader from './../components/Uploader';
+import { makePermalink } from './../lib/functions.js';
 //import { EditorState } from 'draft-js';
 //import { RichEditorExample } from './../components/RichEditor';
 import './../css/form-control.css';
@@ -54,35 +55,38 @@ class Recipe extends React.Component {
   };
 
   handleFormSubmit = async (values, actions) => {
-    let { recipe } = this.props.store.selectedRecipe;
+    let { selectedRecipe } = this.props.store.recipes;
 
     const firebase = await fb();
     const firestore = firebase.firestore();
     const settings = { timestampsInSnapshots: true };
     firestore.settings(settings);
 
-    values.lastUpdated = new Date();
+    values.selectedRecipe.lastUpdated = new Date();
 
-    const addToFirebase = values.recipe;
+    values.selectedRecipe.permalink = makePermalink(
+      values.selectedRecipe.title,
+    );
+
+    const addToFirebase = values.selectedRecipe;
 
     firestore
       .collection(`recipes`)
-      .doc(recipe.id)
+      .doc(selectedRecipe.id)
       .update(addToFirebase)
       .then(() => {
         console.log('success');
         actions.setSubmitting(false);
 
-        if (recipe.title !== values.recipe.title) {
-          let displayUrl = encodeURI(
-            values.recipe.title.replace(/ /g, '-').toLowerCase(),
-          );
+        if (selectedRecipe.title !== values.selectedRecipe.title) {
+          let displayUrl = values.selectedRecipe.permalink;
+
           Router.push(`/recipe?id=${displayUrl}`, `/${displayUrl}/`);
         }
 
-        recipe = values.recipe;
+        selectedRecipe = values.selectedRecipe;
 
-        this.props.dispatch(updateSelectedRecipe(recipe));
+        this.props.dispatch(updateSelectedRecipe(selectedRecipe));
 
         this.setState({
           editing: false,
@@ -97,7 +101,7 @@ class Recipe extends React.Component {
   handleDelRecipeClick = async () => {
     const userConfirmed = confirm('Vill du radera receptet?');
     if (userConfirmed) {
-      let { recipe } = this.props.store.selectedRecipe;
+      let { selectedRecipe } = this.props.store.recipes;
 
       const firebase = await fb();
       const firestore = firebase.firestore();
@@ -106,23 +110,23 @@ class Recipe extends React.Component {
 
       firestore
         .collection(`recipes`)
-        .doc(recipe.id)
+        .doc(selectedRecipe.id)
         .delete()
         .then(() => {
-          this.props.dispatch(deleteSelectedRecipe(recipe));
+          this.props.dispatch(deleteSelectedRecipe(selectedRecipe));
         });
     }
   };
 
   render() {
     const { editing } = this.state;
-    let { recipe, privateLoaded } = this.props.store.selectedRecipe;
+    let { selectedRecipe, usersRecipesLoaded } = this.props.store.recipes;
     const { isSignedIn, user } = this.props.store.session;
 
     let recipeImage;
     let headerImage;
-    if (recipe.image) {
-      let recipieImageUrl = recipe.image;
+    if (selectedRecipe.image) {
+      let recipieImageUrl = selectedRecipe.image;
       headerImage = recipieImageUrl;
       if (recipieImageUrl.includes(`ucarecdn.com`)) {
         //uploadcareUrl, add enhance and resize parameter
@@ -140,14 +144,16 @@ class Recipe extends React.Component {
       );
     }
 
-    if (privateLoaded && !recipe.id) {
+    if (usersRecipesLoaded && !selectedRecipe.id) {
       return (
         <Layout>
           <div className="recipeWrapper">
             <Link href="/">
-              <a className="backBtn">Gå till startsidan</a>
+              <a className="backBtn">Start</a>
             </Link>
-            <h1 style={{ padding: '50px 20px' }}>Kunde ej hitta recept...</h1>
+            <h1 style={{ padding: '50px 20px', margin: '0' }}>
+              Kunde ej hitta recept...
+            </h1>
           </div>
         </Layout>
       );
@@ -155,8 +161,8 @@ class Recipe extends React.Component {
 
     return (
       <Layout
-        title={recipe.title}
-        description={recipe.text}
+        title={selectedRecipe.title}
+        description={selectedRecipe.text}
         ogImage={headerImage}
         url={this.props.asPath}
       >
@@ -172,8 +178,8 @@ class Recipe extends React.Component {
             style={!recipeImage ? { paddingTop: '40px' } : null}
           >
             {(isSignedIn &&
-              recipe.access &&
-              recipe.access.includes(user.uid)) ||
+              selectedRecipe.access &&
+              selectedRecipe.access.includes(user.uid)) ||
             (user && user.admin) ? (
               <button
                 onClick={this.handleEditClick}
@@ -185,7 +191,7 @@ class Recipe extends React.Component {
 
             {editing ? (
               <Formik
-                initialValues={{ recipe }}
+                initialValues={{ selectedRecipe }}
                 onSubmit={this.handleFormSubmit}
               >
                 {({
@@ -199,7 +205,7 @@ class Recipe extends React.Component {
                   isSubmitting,
                 }) => (
                   <div>
-                    <h1>Redigerar {recipe.title}</h1>
+                    <h1>Redigerar {selectedRecipe.title}</h1>
                     <form
                       onSubmit={handleSubmit}
                       className={`form-control-wrapper`}
@@ -210,7 +216,8 @@ class Recipe extends React.Component {
                           tabIndex={`0`}
                           onKeyPress={e => {
                             if (e.key === 'Enter' || e.key === ' ') {
-                              values.recipe.public = !values.recipe.public;
+                              values.selectedRecipe.public = !values
+                                .selectedRecipe.public;
                               const input = e.target.children[0];
                               input.checked = !input.checked;
                             }
@@ -219,8 +226,8 @@ class Recipe extends React.Component {
                           Offentligt
                           <input
                             type={`checkbox`}
-                            id={`recipe[public]`}
-                            checked={values.recipe.public || false}
+                            id={`selectedRecipe[public]`}
+                            checked={values.selectedRecipe.public || false}
                             onChange={handleChange}
                             onBlur={handleBlur}
                             tabIndex={`-1`}
@@ -229,14 +236,36 @@ class Recipe extends React.Component {
                         </label>
                       </div>
 
-                      <label htmlFor={`recipe[image]`}>
+                      <label
+                        htmlFor={`selectedRecipe[title]`}
+                        style={{ marginTop: '20px' }}
+                      >
+                        Titel
+                      </label>
+                      <input
+                        className={`form-control`}
+                        id={`selectedRecipe[title]`}
+                        value={values.selectedRecipe.title || ''}
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                      />
+
+                      <label htmlFor={`selectedRecipe[text]`}>Text</label>
+                      <textarea
+                        className={`form-control stepEditTextArea`}
+                        id={`selectedRecipe[text]`}
+                        value={values.selectedRecipe.text || ''}
+                        onChange={handleChange}
+                      />
+
+                      <label htmlFor={`selectedRecipe[image]`}>
                         Bild (adress till valfri extern källa)
                       </label>
                       <input
                         className={`form-control`}
-                        id={`recipe[image]`}
+                        id={`selectedRecipe[image]`}
                         autoComplete={`off`}
-                        value={values.recipe.image || ''}
+                        value={values.selectedRecipe.image || ''}
                         onChange={handleChange}
                         onBlur={handleBlur}
                         placeholder="https://valfriadress.se/bild.jpg"
@@ -251,49 +280,27 @@ class Recipe extends React.Component {
                         onChange={promise => {
                           promise.then(data => {
                             console.log('File changed: ', data);
-                            values.recipe.image = data.cdnUrl;
+                            values.selectedRecipe.image = data.cdnUrl;
                           });
                         }}
                         onUploadComplete={data => {
                           console.log('Upload completed:', data);
-                          values.recipe.image = data.cdnUrl;
+                          values.selectedRecipe.image = data.cdnUrl;
                         }}
-                      />
-
-                      <label
-                        htmlFor={`recipe[title]`}
-                        style={{ marginTop: '20px' }}
-                      >
-                        Titel
-                      </label>
-                      <input
-                        className={`form-control`}
-                        id={`recipe[title]`}
-                        value={values.recipe.title || ''}
-                        onChange={handleChange}
-                        onBlur={handleBlur}
-                      />
-
-                      <label htmlFor={`recipe[text]`}>Text</label>
-                      <textarea
-                        className={`form-control stepEditTextArea`}
-                        id={`recipe[text]`}
-                        value={values.recipe.text || ''}
-                        onChange={handleChange}
                       />
 
                       <h3>Sätt egen färg på receptet</h3>
                       <div className={`flexSplit`}>
                         <div>
-                          <label htmlFor={`recipe['style'][color]`}>
+                          <label htmlFor={`selectedRecipe['style'][color]`}>
                             Textfärg
                           </label>
                           <input
                             className={`form-control`}
-                            id={`recipe['style'][color]`}
+                            id={`selectedRecipe['style'][color]`}
                             value={
-                              (values.recipe.style &&
-                                values.recipe.style.color) ||
+                              (values.selectedRecipe.style &&
+                                values.selectedRecipe.style.color) ||
                               '#000000'
                             }
                             onChange={handleChange}
@@ -302,15 +309,17 @@ class Recipe extends React.Component {
                           />
                         </div>
                         <div>
-                          <label htmlFor={`recipe['style'][background]`}>
+                          <label
+                            htmlFor={`selectedRecipe['style'][background]`}
+                          >
                             Bakgrundsfärg
                           </label>
                           <input
                             className={`form-control`}
-                            id={`recipe['style'][background]`}
+                            id={`selectedRecipe['style'][background]`}
                             value={
-                              (values.recipe.style &&
-                                values.recipe.style.background) ||
+                              (values.selectedRecipe.style &&
+                                values.selectedRecipe.style.background) ||
                               '#f2eee9'
                             }
                             onChange={handleChange}
@@ -323,21 +332,23 @@ class Recipe extends React.Component {
                       <h3>Visa vem/var som receptet kommer från</h3>
                       <div className={`flexSplit`}>
                         <div>
-                          <label htmlFor={`recipe['cred']`}>Från</label>
+                          <label htmlFor={`selectedRecipe['cred']`}>Från</label>
                           <input
                             className={`form-control`}
-                            id={`recipe['cred']`}
-                            value={values.recipe.cred || ''}
+                            id={`selectedRecipe['cred']`}
+                            value={values.selectedRecipe.cred || ''}
                             onChange={handleChange}
                             onBlur={handleBlur}
                           />
                         </div>
                         <div>
-                          <label htmlFor={`recipe['source']`}>Länk</label>
+                          <label htmlFor={`selectedRecipe['source']`}>
+                            Länk
+                          </label>
                           <input
                             className={`form-control`}
-                            id={`recipe['source']`}
-                            value={values.recipe.source || ''}
+                            id={`selectedRecipe['source']`}
+                            value={values.selectedRecipe.source || ''}
                             onChange={handleChange}
                             onBlur={handleBlur}
                           />
@@ -370,24 +381,28 @@ class Recipe extends React.Component {
               </Formik>
             ) : (
               <div>
-                <h1>{recipe.title}</h1>
+                <h1>{selectedRecipe.title}</h1>
 
-                {recipe.text ? <Markdown source={recipe.text} /> : null}
+                {selectedRecipe.text ? (
+                  <Markdown source={selectedRecipe.text} />
+                ) : null}
               </div>
             )}
 
-            <div className={`recipeIngredientsStepsWrapper`}>
-              <Ingredients />
+            {selectedRecipe.id ? (
+              <div className={`recipeIngredientsStepsWrapper`}>
+                <Ingredients />
 
-              <Steps />
-            </div>
+                <Steps />
+              </div>
+            ) : null}
 
-            {recipe.cred ? <div>{recipe.cred}</div> : null}
+            {selectedRecipe.cred ? <div>{selectedRecipe.cred}</div> : null}
 
-            {recipe.source ? (
+            {selectedRecipe.source ? (
               <div>
-                <a href={recipe.source} target={`_blank`}>
-                  {recipe.source}
+                <a href={selectedRecipe.source} target={`_blank`}>
+                  {selectedRecipe.source}
                 </a>
               </div>
             ) : null}

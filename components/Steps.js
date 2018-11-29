@@ -22,7 +22,7 @@ class Steps extends React.Component {
   };
 
   handleFormSubmit = async (values, actions) => {
-    let { recipe } = this.props.store.selectedRecipe;
+    let { selectedRecipe } = this.props.store.recipes;
 
     const firebase = await fb();
     const firestore = firebase.firestore();
@@ -36,15 +36,15 @@ class Steps extends React.Component {
 
     firestore
       .collection(`recipes`)
-      .doc(recipe.id)
+      .doc(selectedRecipe.id)
       .update(addToFirebase)
       .then(() => {
         console.log('success');
         actions.setSubmitting(false);
 
-        recipe.steps = values.steps;
+        selectedRecipe.steps = values.steps;
 
-        this.props.dispatch(updateSelectedRecipe(recipe));
+        this.props.dispatch(updateSelectedRecipe(selectedRecipe));
 
         this.setState({
           editing: false,
@@ -111,8 +111,8 @@ class Steps extends React.Component {
 
   render() {
     const { editing } = this.state;
-    const { recipe } = this.props.store.selectedRecipe;
-    let { steps } = recipe;
+    const { selectedRecipe } = this.props.store.recipes;
+    let { steps } = selectedRecipe;
     if (!steps) {
       steps = [];
     }
@@ -121,7 +121,9 @@ class Steps extends React.Component {
 
     return (
       <div className="recipeStepsWrapper">
-        {(isSignedIn && recipe.access && recipe.access.includes(user.uid)) ||
+        {(isSignedIn &&
+          selectedRecipe.access &&
+          selectedRecipe.access.includes(user.uid)) ||
         (user && user.admin) ? (
           <button
             onClick={this.handleEditClick}

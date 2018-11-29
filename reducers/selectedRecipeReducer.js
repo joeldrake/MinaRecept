@@ -12,11 +12,7 @@ export default function selectedRecipe(state = initialState, action) {
         ...state,
         recipe: action.recipe,
       };
-    case 'PRIVATE_LOADED':
-      return {
-        ...state,
-        privateLoaded: action.privateLoaded,
-      };
+
     default:
       return state;
   }
