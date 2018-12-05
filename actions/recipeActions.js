@@ -34,6 +34,7 @@ export function addNewRecipe() {
         date: new Date(),
         lastUpdated: new Date(),
         owner: user.uid,
+        access: [user.uid],
       };
 
       firestore

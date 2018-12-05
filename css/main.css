@@ -110,10 +110,9 @@ hr {
 }
 
 .spinner.onBtn {
-  position: relative;
-  top: -3px;
-  margin-left: auto;
-  margin-right: auto;
+  position: absolute;
+  top: calc(50% - 13px);
+  left: calc(50% - 13px);
 }
 
 @keyframes rotation {

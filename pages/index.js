@@ -1,8 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import fb from './../lib/load-firebase.js';
-import { addedNewRecipe, addNewRecipe } from './../actions/recipeActions.js';
-import { makePermalink } from './../lib/functions.js';
+import { addNewRecipe } from './../actions/recipeActions.js';
 import Layout from './../components/Layout.js';
 import Menu from './../components/Menu.js';
 import Link from 'next/link';

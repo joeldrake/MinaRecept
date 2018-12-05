@@ -24,6 +24,11 @@
   text-decoration: none;
 }
 
+.btnBlock {
+  display: block;
+  width: 100%;
+}
+
 .btnIcon {
   background: transparent;
   display: flex;

@@ -5,6 +5,7 @@ import {
   handleUserFacebookSignIn,
   handleUserSignOut,
 } from './../actions/sessionActions.js';
+import LoginForm from './../components/LoginForm.js';
 import './../css/btn.css';
 import './../css/menu.css';
 
@@ -52,7 +53,8 @@ class Menu extends React.Component {
     const keepMenu =
       target.classList.contains('menuBtnImg') ||
       target.classList.contains('menuWrapper') ||
-      target.classList.contains('menuHeadline');
+      target.classList.contains('menuHeadline') ||
+      target.classList.contains('keepMenuOnClick');
 
     if (!keepMenu) {
       this.props.dispatch({ type: 'MENU_TOGGLE', menuOpen: false });
@@ -70,7 +72,7 @@ class Menu extends React.Component {
     this.props.dispatch(handleUserSignOut());
   };
 
-  handleLoginClick = async e => {
+  handleFacebookLoginClick = async e => {
     e.preventDefault();
 
     this.props.dispatch(handleUserFacebookSignIn());
@@ -95,7 +97,9 @@ class Menu extends React.Component {
             <MenuContainer className={`menuWrapper`} key={`menu`}>
               {user ? (
                 <React.Fragment>
-                  <h3 className={`menuHeadline`}>{user.displayName}</h3>
+                  <h3 className={`menuHeadline nice_text`}>
+                    {user.displayName || user.email}
+                  </h3>
                   <a
                     href={`/`}
                     onClick={this.handleLogoutClick}
@@ -106,10 +110,11 @@ class Menu extends React.Component {
                 </React.Fragment>
               ) : (
                 <React.Fragment>
-                  <h3 className={`menuHeadline`}>Logga in</h3>
+                  <LoginForm />
+                  <br />
                   <a
                     href={`/`}
-                    onClick={this.handleLoginClick}
+                    onClick={this.handleFacebookLoginClick}
                     className={`btn loginBtn`}
                   >
                     Logga in med facebook

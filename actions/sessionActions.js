@@ -2,6 +2,42 @@ import { fetchRecipe, fetchPrivateRecipes } from './recipeActions.js';
 import fb from './../lib/load-firebase.js';
 import Router from 'next/router';
 
+export function handleSignUp(values = {}) {
+  return async (dispatch, getState) => {
+    const { email, password } = values;
+
+    const firebase = await fb();
+
+    return firebase
+      .auth()
+      .createUserWithEmailAndPassword(email, password)
+      .then(data => {
+        return data;
+      })
+      .catch(error => {
+        return error;
+      });
+  };
+}
+
+export function handleSignIn(values = {}) {
+  return async (dispatch, getState) => {
+    const { email, password } = values;
+
+    const firebase = await fb();
+
+    return firebase
+      .auth()
+      .signInWithEmailAndPassword(email, password)
+      .then(data => {
+        return data;
+      })
+      .catch(error => {
+        return error;
+      });
+  };
+}
+
 export function handleUserFacebookSignIn() {
   return async (dispatch, getState) => {
     const firebase = await fb();
