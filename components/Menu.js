@@ -49,21 +49,22 @@ class Menu extends React.Component {
     if (!target || !menuOpen) {
       return;
     }
-
     const keepMenu =
+      target.classList.contains('menuBtn') ||
       target.classList.contains('menuBtnImg') ||
       target.classList.contains('menuWrapper') ||
       target.classList.contains('menuHeadline') ||
       target.classList.contains('keepMenuOnClick');
 
     if (!keepMenu) {
-      this.props.dispatch({ type: 'MENU_TOGGLE', menuOpen: false });
+      //this.props.dispatch({ type: 'MENU_TOGGLE', menuOpen: false });
     }
   };
 
   handleMenuBtnClick = e => {
     e.preventDefault();
-    const { menuOpen } = this.props.store.layout;
+    let { menuOpen } = this.props.store.layout;
+
     this.props.dispatch({ type: 'MENU_TOGGLE', menuOpen: !menuOpen });
   };
 
@@ -96,7 +97,7 @@ class Menu extends React.Component {
           {menuOpen ? (
             <MenuContainer className={`menuWrapper`} key={`menu`}>
               {user ? (
-                <React.Fragment>
+                <div>
                   <h3 className={`menuHeadline nice_text`}>
                     {user.displayName || user.email}
                   </h3>
@@ -107,9 +108,9 @@ class Menu extends React.Component {
                   >
                     logout
                   </a>
-                </React.Fragment>
+                </div>
               ) : (
-                <React.Fragment>
+                <div>
                   <LoginForm />
                   <br />
                   <a
@@ -119,7 +120,7 @@ class Menu extends React.Component {
                   >
                     Logga in med facebook
                   </a>
-                </React.Fragment>
+                </div>
               )}
             </MenuContainer>
           ) : null}
