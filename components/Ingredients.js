@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { Formik, FieldArray } from 'formik';
-import fb from './../lib/load-firebase.js';
+import fb from './../utils/load-firebase.js';
 import { updateSelectedRecipe } from './../actions/recipeActions.js';
 import './../css/dragdrop.css';
 import './../css/btn.css';
@@ -24,8 +24,6 @@ class Ingredients extends React.Component {
 
     const firebase = await fb();
     const firestore = firebase.firestore();
-    const settings = { timestampsInSnapshots: true };
-    firestore.settings(settings);
 
     const addToFirebase = {
       ingredients: values.ingredients,
@@ -94,11 +92,22 @@ class Ingredients extends React.Component {
     this.dragged = null;
   };
 
+  selectLatestIngredient() {
+    setTimeout(() => {
+      const list = document.querySelectorAll('.ingredientEdit');
+      if (list && list.length) {
+        const parent = list[list.length - 1];
+        const target = parent.childNodes[0];
+        if (target) target.focus();
+      }
+    }, 10);
+  }
+
   render() {
     const { editing } = this.state;
     const { friendlyNames } = this.props.store.layout;
     const { selectedRecipe } = this.props.store.recipes;
-    const { isSignedIn, user } = this.props.store.session;
+    const { user } = this.props.store.session;
     let { ingredients } = selectedRecipe;
     if (!ingredients) {
       ingredients = [];
@@ -106,7 +115,7 @@ class Ingredients extends React.Component {
 
     return (
       <div className="recipeIngredientsWrapper">
-        {(isSignedIn &&
+        {(user &&
           selectedRecipe.access &&
           selectedRecipe.access.includes(user.uid)) ||
         (user && user.admin) ? (
@@ -149,6 +158,7 @@ class Ingredients extends React.Component {
                               fields.push(
                                 <input
                                   name={`ingredients[${i}][${parameter}]`}
+                                  id={`ingredients[${i}][${parameter}]`}
                                   placeholder={placeholder}
                                   value={values.ingredients[i][parameter] || ''}
                                   onChange={handleChange}
@@ -195,6 +205,7 @@ class Ingredients extends React.Component {
                               unit: '',
                               what: '',
                             });
+                            this.selectLatestIngredient();
                           }}
                           className={`addIngredientBtn btn btnIcon`}
                         >

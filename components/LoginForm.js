@@ -107,13 +107,16 @@ class LoginForm extends React.Component {
           )}
         </Formik>
         {!newSignUp ? (
-          <a
-            href={router.asPath}
-            onClick={this.handleSignUpClick}
-            className={`keepMenuOnClick`}
-          >
-            Skapa nytt konto
-          </a>
+          <div>
+            <br />
+            <a
+              href={router.asPath}
+              onClick={this.handleSignUpClick}
+              className={`keepMenuOnClick`}
+            >
+              Skapa nytt konto
+            </a>
+          </div>
         ) : null}
       </React.Fragment>
     );

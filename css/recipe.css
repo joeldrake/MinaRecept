@@ -7,18 +7,6 @@
 
 .recipeWrapper {
   position: relative;
-  max-width: 800px;
-  margin: 0 auto;
-}
-
-.backBtn {
-  position: absolute;
-  top: 5px;
-  left: 20px;
-  padding: 5px 10px;
-  color: var(--textColor);
-  background: var(--lightThemeColor);
-  text-decoration: none;
 }
 
 .recipeImage {
@@ -66,7 +54,11 @@ li.headline {
   margin-top: 30px;
 }
 
-.recipeEditBtn,
+.recipeEditBtn {
+  float: left;
+  margin-top: 10px;
+}
+
 .delRecipeBtn {
   float: right;
 }

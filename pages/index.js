@@ -79,7 +79,7 @@ class Index extends React.Component {
 
   render() {
     const { publicRecipes, usersRecipes } = this.props.store.recipes;
-    const { isSignedIn } = this.props.store.session;
+    const { user } = this.props.store.session;
 
     const nonPublicRecipes = usersRecipes.filter(recipe => {
       return recipe.public === false;
@@ -92,14 +92,11 @@ class Index extends React.Component {
     //todo: reupload and check cache
     return (
       <Layout>
-        <div
-          className={`widthWrapper addPadding`}
-          style={{ position: 'relative' }}
-        >
+        <div className={`widthWrapper addPadding topWrapper`}>
           <Menu />
           <h1 className={`firstPageHeadline `}>Mina recept</h1>
 
-          {isSignedIn ? (
+          {user ? (
             <div>
               <h2>Dina icke publika recept</h2>
               <div className={`recipesWrapper`}>{renderedUsersRecipes}</div>

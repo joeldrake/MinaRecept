@@ -8,7 +8,7 @@
 
 .menuBtn {
   position: absolute;
-  top: 20px;
+  top: 10px;
   right: 20px;
   padding: 0;
   display: block;
@@ -52,4 +52,7 @@
   height: 16px;
   transform: rotate(45deg);
   background-color: var(--lightThemeColor);
+}
+
+.menuWrapper {
 }

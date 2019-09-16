@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { Formik, FieldArray } from 'formik';
 import Markdown from 'react-markdown';
-import fb from './../lib/load-firebase.js';
+import fb from './../utils/load-firebase.js';
 import { updateSelectedRecipe } from './../actions/recipeActions.js';
 import './../css/dragdrop.css';
 import './../css/btn.css';
@@ -26,8 +26,6 @@ class Steps extends React.Component {
 
     const firebase = await fb();
     const firestore = firebase.firestore();
-    const settings = { timestampsInSnapshots: true };
-    firestore.settings(settings);
 
     const addToFirebase = {
       steps: values.steps,
@@ -109,6 +107,17 @@ class Steps extends React.Component {
     */
   };
 
+  selectLatestStep() {
+    setTimeout(() => {
+      const list = document.querySelectorAll('.recipeStepsEdit form div');
+      if (list && list.length) {
+        const parent = list[list.length - 1];
+        const target = parent.childNodes[0];
+        if (target) target.focus();
+      }
+    }, 10);
+  }
+
   render() {
     const { editing } = this.state;
     const { selectedRecipe } = this.props.store.recipes;
@@ -117,11 +126,11 @@ class Steps extends React.Component {
       steps = [];
     }
 
-    const { isSignedIn, user } = this.props.store.session;
+    const { user } = this.props.store.session;
 
     return (
       <div className="recipeStepsWrapper">
-        {(isSignedIn &&
+        {(user &&
           selectedRecipe.access &&
           selectedRecipe.access.includes(user.uid)) ||
         (user && user.admin) ? (
@@ -194,6 +203,7 @@ class Steps extends React.Component {
                             arrayHelpers.push({
                               text: '',
                             });
+                            this.selectLatestStep();
                           }}
                           className={`addStepBtn btn btnIcon`}
                         >

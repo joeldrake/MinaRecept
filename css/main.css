@@ -19,7 +19,7 @@ body {
 }
 
 .widthWrapper {
-  max-width: 1200px;
+  max-width: 1000px;
   margin: 0 auto;
 }
 
@@ -42,6 +42,21 @@ a {
 hr {
   border: 0;
   border-bottom: 1px solid var(--heavyThemeColor);
+}
+
+.topWrapper {
+  position: relative;
+  z-index: 1;
+}
+
+.backBtn {
+  position: absolute;
+  top: 10px;
+  left: 20px;
+  padding: 5px 10px;
+  color: var(--textColor);
+  background: var(--lightThemeColor);
+  text-decoration: none;
 }
 
 .flexSplit {

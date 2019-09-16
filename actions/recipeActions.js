@@ -1,6 +1,6 @@
 import Router from 'next/router';
-import fb from './../lib/load-firebase.js';
-import { makePermalink } from './../lib/functions.js';
+import fb from './../utils/load-firebase.js';
+import { makePermalink } from './../utils/functions.js';
 import { unionBy } from 'lodash';
 
 export function addNewRecipe() {
@@ -24,8 +24,6 @@ export function addNewRecipe() {
     if (title && title !== `` && user && user.uid) {
       const firebase = await fb();
       const firestore = firebase.firestore();
-      const settings = { timestampsInSnapshots: true };
-      firestore.settings(settings);
 
       let newRecipe = {
         title,
@@ -109,11 +107,6 @@ export function fetchRecipe(id) {
     const firebase = await fb();
     const firestore = firebase.firestore();
 
-    const settings = {
-      timestampsInSnapshots: true,
-    };
-    firestore.settings(settings);
-
     //fungerar
     //.doc('Afrikansk kikärtsgryta 1527697807704')
     //todo: fix the permission in firebase
@@ -130,8 +123,8 @@ export function fetchRecipe(id) {
           return recipeData;
         });
 
-        const publicRecipe = returnData[0].public;
-        const recipeOwner = returnData[0].owner;
+        const publicRecipe = returnData[0] ? returnData[0].public : {};
+        const recipeOwner = returnData[0] ? returnData[0].owner : {};
         const loggedInUid = user && user.uid;
 
         if (
@@ -180,8 +173,6 @@ export function fetchPrivateRecipes() {
 
     const firebase = await fb();
     const firestore = firebase.firestore();
-    const settings = { timestampsInSnapshots: true };
-    firestore.settings(settings);
 
     let usersRecipes = await firestore
       .collection(`recipes`)
@@ -218,11 +209,6 @@ export function fetchPublicRecipes() {
   return async (dispatch, getState) => {
     const firebase = await fb();
     const firestore = firebase.firestore();
-
-    const settings = {
-      timestampsInSnapshots: true,
-    };
-    firestore.settings(settings);
 
     let publicRecipes = await firestore
       .collection(`recipes`)

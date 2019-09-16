@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Formik } from 'formik';
 import Markdown from 'react-markdown';
 import Router from 'next/router';
-import fb from './../lib/load-firebase.js';
+import fb from './../utils/load-firebase.js';
 import {
   updateSelectedRecipe,
   deleteSelectedRecipe,
@@ -12,8 +12,9 @@ import Layout from '../components/Layout.js';
 import Link from 'next/link';
 import Ingredients from '../components/Ingredients.js';
 import Steps from '../components/Steps.js';
+import Menu from './../components/Menu.js';
 import Uploader from './../components/Uploader';
-import { makePermalink } from './../lib/functions.js';
+import { makePermalink } from './../utils/functions.js';
 //import { EditorState } from 'draft-js';
 //import { RichEditorExample } from './../components/RichEditor';
 import './../css/form-control.css';
@@ -59,8 +60,6 @@ class Recipe extends React.Component {
 
     const firebase = await fb();
     const firestore = firebase.firestore();
-    const settings = { timestampsInSnapshots: true };
-    firestore.settings(settings);
 
     values.selectedRecipe.lastUpdated = new Date();
 
@@ -105,8 +104,6 @@ class Recipe extends React.Component {
 
       const firebase = await fb();
       const firestore = firebase.firestore();
-      const settings = { timestampsInSnapshots: true };
-      firestore.settings(settings);
 
       firestore
         .collection(`recipes`)
@@ -121,7 +118,7 @@ class Recipe extends React.Component {
   render() {
     const { editing } = this.state;
     let { selectedRecipe, usersRecipesLoaded } = this.props.store.recipes;
-    const { isSignedIn, user } = this.props.store.session;
+    const { user } = this.props.store.session;
 
     let recipeImage;
     let headerImage;
@@ -166,7 +163,13 @@ class Recipe extends React.Component {
         ogImage={headerImage}
         url={this.props.asPath}
       >
-        <div className="recipeWrapper">
+        {user ? (
+          <div className={`widthWrapper topWrapper`}>
+            <Menu />
+          </div>
+        ) : null}
+
+        <div className="recipeWrapper widthWrapper">
           <Link href="/">
             <a className="backBtn">Start</a>
           </Link>
@@ -177,7 +180,7 @@ class Recipe extends React.Component {
             className={`recipeContent`}
             style={!recipeImage ? { paddingTop: '40px' } : null}
           >
-            {(isSignedIn &&
+            {(user &&
               selectedRecipe.access &&
               selectedRecipe.access.includes(user.uid)) ||
             (user && user.admin) ? (
@@ -211,23 +214,16 @@ class Recipe extends React.Component {
                       className={`form-control-wrapper`}
                     >
                       <div>
-                        <label
-                          className={`checkboxWrapper`}
-                          tabIndex={`0`}
-                          onKeyPress={e => {
-                            if (e.key === 'Enter' || e.key === ' ') {
-                              values.selectedRecipe.public = !values
-                                .selectedRecipe.public;
-                              const input = e.target.children[0];
-                              input.checked = !input.checked;
-                            }
-                          }}
-                        >
+                        <label className={`checkboxWrapper`} tabIndex={`0`}>
                           Offentligt
                           <input
                             type={`checkbox`}
                             id={`selectedRecipe[public]`}
-                            checked={values.selectedRecipe.public || false}
+                            checked={
+                              values &&
+                              values.selectedRecipe &&
+                              values.selectedRecipe.public
+                            }
                             onChange={handleChange}
                             onBlur={handleBlur}
                             tabIndex={`-1`}

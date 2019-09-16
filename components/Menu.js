@@ -6,6 +6,7 @@ import {
   handleUserSignOut,
 } from './../actions/sessionActions.js';
 import LoginForm from './../components/LoginForm.js';
+import Link from 'next/link';
 import './../css/btn.css';
 import './../css/menu.css';
 
@@ -49,15 +50,19 @@ class Menu extends React.Component {
     if (!target || !menuOpen) {
       return;
     }
-    const keepMenu =
-      target.classList.contains('menuBtn') ||
-      target.classList.contains('menuBtnImg') ||
-      target.classList.contains('menuWrapper') ||
-      target.classList.contains('menuHeadline') ||
-      target.classList.contains('keepMenuOnClick');
 
-    if (!keepMenu) {
-      //this.props.dispatch({ type: 'MENU_TOGGLE', menuOpen: false });
+    const okClick =
+      target.classList.contains('menuBtn') ||
+      target.classList.contains('menuBtnImg');
+
+    if (okClick) {
+      return;
+    }
+
+    const clickInsideMenu = target.closest('.menuWrapper');
+
+    if (!clickInsideMenu) {
+      this.props.dispatch({ type: 'MENU_TOGGLE', menuOpen: false });
     }
   };
 
@@ -81,7 +86,7 @@ class Menu extends React.Component {
 
   render() {
     const { menuOpen } = this.props.store.layout;
-    const { user, isSignedIn } = this.props.store.session;
+    const { user } = this.props.store.session;
     return (
       <React.Fragment>
         <button className={`menuBtn`} onClick={this.handleMenuBtnClick}>
@@ -98,9 +103,15 @@ class Menu extends React.Component {
             <MenuContainer className={`menuWrapper`} key={`menu`}>
               {user ? (
                 <div>
-                  <h3 className={`menuHeadline nice_text`}>
-                    {user.displayName || user.email}
-                  </h3>
+                  <div>Inloggad som:</div>
+                  <div>
+                    <Link href="/user">
+                      <a className={`menuHeadline nice_text`}>
+                        {user.displayName || user.email}
+                      </a>
+                    </Link>
+                  </div>
+                  <br />
                   <a
                     href={`/`}
                     onClick={this.handleLogoutClick}
@@ -112,14 +123,6 @@ class Menu extends React.Component {
               ) : (
                 <div>
                   <LoginForm />
-                  <br />
-                  <a
-                    href={`/`}
-                    onClick={this.handleFacebookLoginClick}
-                    className={`btn loginBtn`}
-                  >
-                    Logga in med facebook
-                  </a>
                 </div>
               )}
             </MenuContainer>

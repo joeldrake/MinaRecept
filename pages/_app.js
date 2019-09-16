@@ -1,16 +1,15 @@
 import React from 'react';
 import { Provider } from 'react-redux';
-import App, { Container } from 'next/app';
+import App from 'next/app';
 import withRedux from 'next-redux-wrapper';
 import { handleUserAuthChanged } from './../actions/sessionActions.js';
 import { fetchRecipe, fetchPublicRecipes } from './../actions/recipeActions.js';
-import { initStore } from './../lib/store.js';
-import fb from './../lib/load-firebase.js';
+import { initStore } from './../utils/store.js';
+import fb from './../utils/load-firebase.js';
 
 class MyApp extends App {
   static async getInitialProps({ Component, ctx }) {
     if (ctx && ctx.req && ctx.res) {
-      console.log(ctx.query);
       //this is serverside
 
       if (ctx.query && ctx.query.id) {
@@ -67,11 +66,9 @@ class MyApp extends App {
   render() {
     const { Component, pageProps, store } = this.props;
     return (
-      <Container>
-        <Provider store={store}>
-          <Component {...pageProps} />
-        </Provider>
-      </Container>
+      <Provider store={store}>
+        <Component {...pageProps} />
+      </Provider>
     );
   }
 }

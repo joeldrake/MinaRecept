@@ -1,5 +1,5 @@
 import { fetchRecipe, fetchPrivateRecipes } from './recipeActions.js';
-import fb from './../lib/load-firebase.js';
+import fb from './../utils/load-firebase.js';
 import Router from 'next/router';
 
 export function handleSignUp(values = {}) {
@@ -77,7 +77,6 @@ export function handleUserAuthChanged(user) {
     const { query } = router;
 
     let userCollect = null;
-    let isSignedIn = false;
     if (user) {
       /*
         getting an error when trying to store the whole user object in redux
@@ -94,17 +93,15 @@ export function handleUserAuthChanged(user) {
         photoURL: user.photoURL,
         admin: admin,
       };
-      isSignedIn = true;
     }
 
     dispatch({
       type: `LOGIN_STATE`,
-      isSignedIn,
       user: userCollect,
     });
 
     //if user is signed in and on a recipe, and selectedRecipe is empty, redo fetch, it might be the owner that logged in
-    if (isSignedIn && query && query.id && !selectedRecipe.id) {
+    if (userCollect && query && query.id && !selectedRecipe.id) {
       console.log('refetch');
       dispatch(fetchRecipe(query.id));
     }
