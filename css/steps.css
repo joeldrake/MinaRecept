@@ -1,10 +1,3 @@
-:root {
-  --textColor: #222222;
-  --lightThemeColor: #f2eee9;
-  --heavyThemeColor: #928f8a;
-  --linkColor: #0073e0;
-}
-
 .stepEdit {
   position: relative;
 }
