@@ -38,6 +38,18 @@ class Recipe extends React.Component {
     editing: false,
   };
 
+  componentDidMount() {
+    let { selectedRecipe } = this.props.store.recipes;
+    let { query = {} } = this.props;
+    if (
+      !selectedRecipe ||
+      (selectedRecipe && selectedRecipe.permalink != query.id)
+    ) {
+      //recipe not loaded or id has been changed by browser history step
+      this.props.dispatch(fetchRecipe(query.id));
+    }
+  }
+
   handleEditClick = () => {
     const { editing } = this.state;
     this.setState({
