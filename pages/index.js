@@ -1,13 +1,21 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { addNewRecipe } from './../actions/recipeActions.js';
+import {
+  fetchPublicRecipes,
+  addNewRecipe,
+} from './../actions/recipeActions.js';
 import Layout from './../components/Layout.js';
 import Menu from './../components/Menu.js';
 import Link from 'next/link';
+import Router from 'next/router';
 import './../css/start.css';
 
 class Index extends React.Component {
-  static async getInitialProps({ isServer, pathname, asPath, query }) {
+  static async getInitialProps({ store, isServer, pathname, asPath, query }) {
+    if (isServer) {
+      await store.dispatch(fetchPublicRecipes());
+    }
+
     return {
       isServer,
       pathname,
@@ -16,7 +24,7 @@ class Index extends React.Component {
     };
   }
 
-  async componentDidMount() {
+  componentDidMount() {
     //clear selected recipe data
     this.props.dispatch({
       type: `UPDATE_SELECTED_RECIPE`,
@@ -25,7 +33,6 @@ class Index extends React.Component {
   }
 
   handleRecipeClick(selectedRecipe) {
-    //set selected recipe data
     this.props.dispatch({
       type: `UPDATE_SELECTED_RECIPE`,
       selectedRecipe,
@@ -37,44 +44,45 @@ class Index extends React.Component {
   };
 
   renderRecipes(recipes) {
-    return recipes
-      ? recipes.map((recipe, i) => {
-          let addedStyle = {};
+    if (!recipes) return;
 
-          let hasImage;
-          if (recipe.image && recipe.image !== '') {
-            let recipieImageUrl = recipe.image;
-            if (recipieImageUrl.includes('ucarecdn.com')) {
-              //uploadcareUrl, add enhance and resize parameter
-              recipieImageUrl += '-/enhance/50/-/resize/500x/';
-            }
-            hasImage = true;
-            addedStyle.backgroundImage = `url(${recipieImageUrl})`;
-          }
+    return recipes.map((recipe, i) => {
+      let addedStyle = {};
 
-          return (
-            <Link
-              as={`/${recipe.permalink}/`}
-              href={`/recipe?id=${recipe.permalink}`}
-              key={i}
-            >
-              <a
-                className={`recipeLink`}
-                onClick={() => this.handleRecipeClick(recipe)}
-              >
-                <div
-                  className={`recipeLinkImage` + (!hasImage ? ` noImage` : ``)}
-                  style={addedStyle}
-                />
-                <div className={`recipeLinkText`}>{recipe.title}</div>
-                {recipe.text ? (
-                  <div className={`recipeLinkDesciption`}>{recipe.text}</div>
-                ) : null}
-              </a>
-            </Link>
-          );
-        })
-      : null;
+      let hasImage;
+      if (recipe.image && recipe.image !== '') {
+        let recipieImageUrl = recipe.image;
+        if (recipieImageUrl.includes('ucarecdn.com')) {
+          //uploadcareUrl, add enhance and resize parameter
+          recipieImageUrl += '-/enhance/50/-/resize/500x/';
+        }
+        hasImage = true;
+        addedStyle.backgroundImage = `url(${recipieImageUrl})`;
+      }
+
+      return (
+        <Link
+          href={`/[id]?id=${recipe.permalink}`}
+          as={`/${recipe.permalink}/`}
+          prefetch={false}
+          key={i}
+        >
+          <a
+            className={`recipeLink`}
+            onClick={() => this.handleRecipeClick(recipe)}
+          >
+            <div
+              className={`recipeLinkImage` + (!hasImage ? ` noImage` : ``)}
+              style={addedStyle}
+            />
+            <div className={`recipeLinkText`}>{recipe.title}</div>
+            {recipe.text ? (
+              <div className={`recipeLinkDesciption`}>{recipe.text}</div>
+            ) : null}
+          </a>
+        </Link>
+      );
+    });
   }
 
   render() {
@@ -111,7 +119,7 @@ class Index extends React.Component {
         </div>
 
         <div className={`addPadding widthWrapper`}>
-          <h2>Offentliga recept</h2>
+          {user ? <h2>Publika recept</h2> : null}
           <div className={`recipesWrapper`}>{renderedPublicRecipes}</div>
         </div>
       </Layout>

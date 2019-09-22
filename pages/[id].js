@@ -5,6 +5,7 @@ import Markdown from 'react-markdown';
 import Router from 'next/router';
 import fb from './../utils/load-firebase.js';
 import {
+  fetchRecipe,
   updateSelectedRecipe,
   deleteSelectedRecipe,
 } from './../actions/recipeActions.js';
@@ -15,14 +16,16 @@ import Steps from '../components/Steps.js';
 import Menu from './../components/Menu.js';
 import Uploader from './../components/Uploader';
 import { makePermalink } from './../utils/functions.js';
-//import { EditorState } from 'draft-js';
-//import { RichEditorExample } from './../components/RichEditor';
 import './../css/form-control.css';
 import './../css/checkbox.css';
 import './../css/recipe.css';
 
 class Recipe extends React.Component {
-  static async getInitialProps({ isServer, pathname, asPath, query }) {
+  static async getInitialProps({ store, isServer, pathname, asPath, query }) {
+    if (isServer) {
+      await store.dispatch(fetchRecipe(query.id));
+    }
+
     return {
       isServer,
       pathname,
@@ -34,19 +37,6 @@ class Recipe extends React.Component {
   state = {
     editing: false,
   };
-
-  /*
-  componentDidMount() {
-    let { recipe } = this.props.store.selectedRecipe;
-    if (recipe) {
-      recipe.editorState = EditorState.createEmpty();
-      this.props.dispatch({
-        type: `UPDATE_RECIPE`,
-        recipe: recipe,
-      });
-    }
-  }
-  */
 
   handleEditClick = () => {
     const { editing } = this.state;
@@ -80,7 +70,9 @@ class Recipe extends React.Component {
         if (selectedRecipe.title !== values.selectedRecipe.title) {
           let displayUrl = values.selectedRecipe.permalink;
 
-          Router.push(`/recipe?id=${displayUrl}`, `/${displayUrl}/`);
+          const href = `/?id=${displayUrl}`;
+          const as = `/${displayUrl}/`;
+          Router.push(href, as);
         }
 
         selectedRecipe = values.selectedRecipe;
@@ -117,7 +109,7 @@ class Recipe extends React.Component {
 
   render() {
     const { editing } = this.state;
-    let { selectedRecipe, usersRecipesLoaded } = this.props.store.recipes;
+    let { selectedRecipe = {}, usersRecipesLoaded } = this.props.store.recipes;
     const { user } = this.props.store.session;
 
     let recipeImage;
@@ -397,7 +389,11 @@ class Recipe extends React.Component {
 
             {selectedRecipe.source ? (
               <div>
-                <a href={selectedRecipe.source} target={`_blank`}>
+                <a
+                  href={selectedRecipe.source}
+                  className={`recipe__sourceLink`}
+                  target={`_blank`}
+                >
                   {selectedRecipe.source}
                 </a>
               </div>

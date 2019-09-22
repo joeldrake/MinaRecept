@@ -1,7 +1,6 @@
 import Router from 'next/router';
 import fb from './../utils/load-firebase.js';
 import { makePermalink } from './../utils/functions.js';
-import { unionBy } from 'lodash';
 
 export function addNewRecipe() {
   return async (dispatch, getState) => {
@@ -67,8 +66,9 @@ export function addedNewRecipe(recipe) {
         type: `UPDATE_USERS_RECIPES`,
         usersRecipes,
       });
-
-      Router.push(`/recipe?id=${recipe.permalink}`, `/${recipe.permalink}/`);
+      const href = `/?id=${recipe.permalink}`;
+      const as = `/${recipe.permalink}/`;
+      Router.push(href, as);
     }
   };
 }

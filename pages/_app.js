@@ -3,7 +3,7 @@ import { Provider } from 'react-redux';
 import App from 'next/app';
 import withRedux from 'next-redux-wrapper';
 import { handleUserAuthChanged } from './../actions/sessionActions.js';
-import { fetchRecipe, fetchPublicRecipes } from './../actions/recipeActions.js';
+import { fetchPublicRecipes } from './../actions/recipeActions.js';
 import { initStore } from './../utils/store.js';
 import fb from './../utils/load-firebase.js';
 
@@ -11,14 +11,6 @@ class MyApp extends App {
   static async getInitialProps({ Component, ctx }) {
     if (ctx && ctx.req && ctx.res) {
       //this is serverside
-
-      if (ctx.query && ctx.query.id) {
-        //user is on a recipie page
-        await ctx.store.dispatch(fetchRecipe(ctx.query.id));
-        //await ctx.store.dispatch(fetchPublicRecipes(ctx.query));
-      } else {
-        await ctx.store.dispatch(fetchPublicRecipes());
-      }
     }
 
     const pageProps = Component.getInitialProps
