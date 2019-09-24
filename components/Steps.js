@@ -4,10 +4,10 @@ import { Formik, FieldArray } from 'formik';
 import Markdown from 'react-markdown';
 import fb from './../utils/load-firebase.js';
 import { updateSelectedRecipe } from './../actions/recipeActions.js';
-import './../css/dragdrop.css';
-import './../css/btn.css';
-import './../css/form-control.css';
-import './../css/steps.css';
+import './../css/dragdrop.scss';
+import './../css/btn.scss';
+import './../css/form-control.scss';
+import './../css/steps.scss';
 
 class Steps extends React.Component {
   state = {

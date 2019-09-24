@@ -7,8 +7,8 @@ import {
 } from './../actions/sessionActions.js';
 import LoginForm from './../components/LoginForm.js';
 import Link from 'next/link';
-import './../css/btn.css';
-import './../css/menu.css';
+import './../css/btn.scss';
+import './../css/menu.scss';
 
 const MenuContainer = posed.div({
   enter: {

@@ -7,8 +7,8 @@ import {
 import Layout from './../components/Layout.js';
 import Menu from './../components/Menu.js';
 import Link from 'next/link';
-import Router from 'next/router';
-import './../css/start.css';
+import Switch from '@material-ui/core/Switch';
+import './../css/start.scss';
 
 class Index extends React.Component {
   static async getInitialProps({ store, isServer, pathname, asPath, query }) {
@@ -24,13 +24,7 @@ class Index extends React.Component {
     };
   }
 
-  componentDidMount() {
-    //clear selected recipe data
-    this.props.dispatch({
-      type: `UPDATE_SELECTED_RECIPE`,
-      selectedRecipe: {},
-    });
-  }
+  componentDidMount() {}
 
   handleRecipeClick(selectedRecipe) {
     this.props.dispatch({
@@ -104,24 +98,26 @@ class Index extends React.Component {
           <Menu />
           <h1 className={`firstPageHeadline `}>Mina recept</h1>
 
-          {user ? (
-            <div>
-              <h2>Dina icke publika recept</h2>
-              <div className={`recipesWrapper`}>{renderedUsersRecipes}</div>
-              <button
-                onClick={this.handleAddRecipeClick}
-                className={`recipeAddBtn btn`}
-              >
-                Lägg till recept
-              </button>
-            </div>
-          ) : null}
+          <Switch />
         </div>
 
         <div className={`addPadding widthWrapper`}>
           {user ? <h2>Publika recept</h2> : null}
           <div className={`recipesWrapper`}>{renderedPublicRecipes}</div>
         </div>
+
+        {user ? (
+          <div className={`addPadding widthWrapper`}>
+            <h2>Dina icke publika recept</h2>
+            <div className={`recipesWrapper`}>{renderedUsersRecipes}</div>
+            <button
+              onClick={this.handleAddRecipeClick}
+              className={`recipeAddBtn btn`}
+            >
+              Lägg till recept
+            </button>
+          </div>
+        ) : null}
       </Layout>
     );
   }

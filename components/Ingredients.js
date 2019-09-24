@@ -3,9 +3,9 @@ import { connect } from 'react-redux';
 import { Formik, FieldArray } from 'formik';
 import fb from './../utils/load-firebase.js';
 import { updateSelectedRecipe } from './../actions/recipeActions.js';
-import './../css/dragdrop.css';
-import './../css/btn.css';
-import './../css/ingredients.css';
+import './../css/dragdrop.scss';
+import './../css/btn.scss';
+import './../css/ingredients.scss';
 
 class Ingredients extends React.Component {
   state = {

@@ -3,9 +3,9 @@ import { connect } from 'react-redux';
 import { Formik } from 'formik';
 import { handleSignIn, handleSignUp } from './../actions/sessionActions.js';
 import Router from 'next/router';
-import './../css/btn.css';
-import './../css/form-control.css';
-import './../css/loginform.css';
+import './../css/btn.scss';
+import './../css/form-control.scss';
+import './../css/loginform.scss';
 
 class LoginForm extends React.Component {
   state = {

@@ -1,7 +1,7 @@
 const path = require('path');
-const withCss = require('@zeit/next-css');
+const withSass = require('@zeit/next-sass');
 
-module.exports = withCss({
+module.exports = withSass({
   webpack(config) {
     config.resolve.alias['@components'] = path.join(__dirname, 'components');
     config.resolve.alias['@styles'] = path.join(__dirname, 'styles');

@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import Head from './Head';
-import './../css/main.css';
+import './../css/main.scss';
 
 class Layout extends React.Component {
   render() {

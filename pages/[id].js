@@ -16,9 +16,9 @@ import Steps from '../components/Steps.js';
 import Menu from './../components/Menu.js';
 import Uploader from './../components/Uploader';
 import { makePermalink } from './../utils/functions.js';
-import './../css/form-control.css';
-import './../css/checkbox.css';
-import './../css/recipe.css';
+import './../css/form-control.scss';
+import './../css/checkbox.scss';
+import './../css/recipe.scss';
 
 class Recipe extends React.Component {
   static async getInitialProps({ store, isServer, pathname, asPath, query }) {
@@ -126,11 +126,13 @@ class Recipe extends React.Component {
 
     let recipeImage;
     let headerImage;
+    let lowresRecipeImage = ``;
     if (selectedRecipe.image) {
       let recipieImageUrl = selectedRecipe.image;
       headerImage = recipieImageUrl;
       if (recipieImageUrl.includes(`ucarecdn.com`)) {
         //uploadcareUrl, add enhance and resize parameter
+        lowresRecipeImage = `, url(${recipieImageUrl}-/enhance/50/-/resize/500x/)`;
         recipieImageUrl += `-/enhance/50/-/resize/1000x/`;
         headerImage += `/-/enhance/50/-/scale_crop/1200x630/center/`;
       }
@@ -139,7 +141,7 @@ class Recipe extends React.Component {
         <div
           className="recipeImage"
           style={{
-            backgroundImage: `url(${recipieImageUrl})`,
+            backgroundImage: `url(${recipieImageUrl})${lowresRecipeImage}`,
           }}
         />
       );

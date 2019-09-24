@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import Layout from './../components/Layout.js';
 import Menu from './../components/Menu.js';
 import Link from 'next/link';
-import './../css/user.css';
+import './../css/user.scss';
 
 class Index extends React.Component {
   static async getInitialProps({ isServer, pathname, asPath, query }) {

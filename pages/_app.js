@@ -6,6 +6,10 @@ import { handleUserAuthChanged } from './../actions/sessionActions.js';
 import { fetchPublicRecipes } from './../actions/recipeActions.js';
 import { initStore } from './../utils/store.js';
 import fb from './../utils/load-firebase.js';
+import { ThemeProvider } from '@material-ui/styles';
+import theme from '@styles/theme';
+import { TransitionGroup, CSSTransition } from 'react-transition-group';
+import './../css/minaReceptTransition.scss';
 
 class MyApp extends App {
   static async getInitialProps({ Component, ctx }) {
@@ -56,10 +60,29 @@ class MyApp extends App {
   }
 
   render() {
-    const { Component, pageProps, store } = this.props;
+    const { Component, pageProps, store, router } = this.props;
+    const { route } = router;
+    const startPage = route === '/';
+    let transitionDirection = startPage ? 'transitionLeft' : 'transitionRight';
+
+    let animateEnter = startPage ? true : false;
+    let animateExit = startPage ? false : true;
+
     return (
       <Provider store={store}>
-        <Component {...pageProps} />
+        <ThemeProvider theme={theme}>
+          <TransitionGroup>
+            <CSSTransition
+              timeout={300}
+              enter={animateEnter}
+              exit={animateExit}
+              classNames={transitionDirection}
+              key={route}
+            >
+              <Component {...pageProps} />
+            </CSSTransition>
+          </TransitionGroup>
+        </ThemeProvider>
       </Provider>
     );
   }
