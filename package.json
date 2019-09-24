@@ -7,7 +7,8 @@
     "dev": "next dev",
     "start": "next start",
     "build": "next build",
-    "export": "next export"
+    "export": "next export",
+    "analyze": "ANALYZE=true npm run build"
   },
   "keywords": [],
   "author": "",
@@ -20,9 +21,10 @@
     "@material-ui/core": "^4.4.2",
     "@material-ui/icons": "^4.4.1",
     "@material-ui/styles": "^4.4.1",
+    "@next/bundle-analyzer": "^9.0.6",
     "@zeit/next-sass": "^1.0.1",
-    "babel-plugin-styled-components": "^1.10.6",
     "autoprefixer": "^9.6.1",
+    "babel-plugin-styled-components": "^1.10.6",
     "firebase": "^6.6.2",
     "formik": "^1.5.8",
     "lodash": "^4.17.15",
