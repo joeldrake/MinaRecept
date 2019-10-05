@@ -1,16 +1,34 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import {
-  fetchPublicRecipes,
-  addNewRecipe,
-} from './../actions/recipeActions.js';
-import Layout from './../components/Layout.js';
-import Menu from './../components/Menu.js';
+import { fetchPublicRecipes, addNewRecipe } from '@actions/recipeActions.js';
+import Layout from '@components/Layout.js';
+import Menu from '@components/Menu.js';
 import Link from 'next/link';
-import Switch from '@material-ui/core/Switch';
-import './../css/start.scss';
 
-class Index extends React.Component {
+import Card from '@material-ui/core/Card';
+import CardMedia from '@material-ui/core/CardMedia';
+import CardContent from '@material-ui/core/CardContent';
+import { withStyles } from '@material-ui/core/styles';
+
+import '@styles/pages/Start.scss';
+
+interface IAnyParams {
+  [key: string]: any;
+}
+
+const StyledCardMedia = withStyles({
+  root: {
+    paddingTop: '50%',
+  },
+})(CardMedia);
+
+const StyledCard = withStyles({
+  root: {
+    height: '100%',
+  },
+})(Card);
+
+class Index extends React.Component<IAnyParams> {
   static async getInitialProps({ store, isServer, pathname, asPath, query }) {
     if (isServer) {
       await store.dispatch(fetchPublicRecipes());
@@ -41,38 +59,32 @@ class Index extends React.Component {
     if (!recipes) return;
 
     return recipes.map((recipe, i) => {
-      let addedStyle = {};
-
-      let hasImage;
+      let recipieImageUrl = '/static/img/OGimage.png';
       if (recipe.image && recipe.image !== '') {
-        let recipieImageUrl = recipe.image;
+        recipieImageUrl = recipe.image;
         if (recipieImageUrl.includes('ucarecdn.com')) {
           //uploadcareUrl, add enhance and resize parameter
           recipieImageUrl += '-/enhance/50/-/resize/500x/';
         }
-        hasImage = true;
-        addedStyle.backgroundImage = `url(${recipieImageUrl})`;
       }
 
       return (
         <Link
           href={`/[id]?id=${recipe.permalink}`}
           as={`/${recipe.permalink}/`}
-          prefetch={false}
           key={i}
         >
           <a
             className={`recipeLink`}
             onClick={() => this.handleRecipeClick(recipe)}
           >
-            <div
-              className={`recipeLinkImage` + (!hasImage ? ` noImage` : ``)}
-              style={addedStyle}
-            />
-            <div className={`recipeLinkText`}>{recipe.title}</div>
-            {recipe.text ? (
-              <div className={`recipeLinkDesciption`}>{recipe.text}</div>
-            ) : null}
+            <StyledCard>
+              <StyledCardMedia image={recipieImageUrl} title={recipe.title} />
+              <CardContent>
+                <h2>{recipe.title}</h2>
+                <p>{recipe.text}</p>
+              </CardContent>
+            </StyledCard>
           </a>
         </Link>
       );
@@ -97,8 +109,6 @@ class Index extends React.Component {
         <div className={`widthWrapper addPadding topWrapper`}>
           <Menu />
           <h1 className={`firstPageHeadline `}>Mina recept</h1>
-
-          <Switch />
         </div>
 
         <div className={`addPadding widthWrapper`}>

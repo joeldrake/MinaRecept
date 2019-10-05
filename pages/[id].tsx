@@ -20,7 +20,11 @@ import './../css/form-control.scss';
 import './../css/checkbox.scss';
 import './../css/recipe.scss';
 
-class Recipe extends React.Component {
+interface IAnyParams {
+	[key: string]: any;
+}
+
+class Recipe extends React.Component<IAnyParams> {
   static async getInitialProps({ store, isServer, pathname, asPath, query }) {
     if (isServer) {
       await store.dispatch(fetchRecipe(query.id));
@@ -220,7 +224,7 @@ class Recipe extends React.Component {
                       className={`form-control-wrapper`}
                     >
                       <div>
-                        <label className={`checkboxWrapper`} tabIndex={`0`}>
+                        <label className={`checkboxWrapper`} tabIndex={0}>
                           Offentligt
                           <input
                             type={`checkbox`}
@@ -232,7 +236,7 @@ class Recipe extends React.Component {
                             }
                             onChange={handleChange}
                             onBlur={handleBlur}
-                            tabIndex={`-1`}
+                            tabIndex={-1}
                           />
                           <span className="checkmark" />
                         </label>
