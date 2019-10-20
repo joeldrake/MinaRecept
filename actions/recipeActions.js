@@ -1,6 +1,7 @@
 import Router from 'next/router';
 import fb from './../utils/load-firebase.js';
 import { makePermalink } from './../utils/functions.js';
+import compact from 'lodash/compact';
 
 export function addNewRecipe() {
   return async (dispatch, getState) => {
@@ -174,6 +175,8 @@ export function fetchPrivateRecipes() {
     const firebase = await fb();
     const firestore = firebase.firestore();
 
+    let collectedIngredients = [];
+
     let usersRecipes = await firestore
       .collection(`recipes`)
       .where('owner', '==', user.uid)
@@ -186,6 +189,11 @@ export function fetchPrivateRecipes() {
           //see if id can be gotten in a better way
           recipeData.id = recipe.id;
 
+          if (recipeData.ingredients && recipeData.public === false) {
+            const ingredients = collectIngredients(recipeData.ingredients);
+            collectedIngredients = collectedIngredients.concat(ingredients);
+          }
+
           return recipeData;
         });
 
@@ -195,6 +203,11 @@ export function fetchPrivateRecipes() {
         console.log(e);
         return [];
       });
+
+    /*
+      Do something with
+      collectedIngredients
+   */
 
     //const mergedRecipes = unionBy(data, privateRecepies, 'title');
 
@@ -210,6 +223,8 @@ export function fetchPublicRecipes() {
     const firebase = await fb();
     const firestore = firebase.firestore();
 
+    let collectedIngredients = [];
+
     let publicRecipes = await firestore
       .collection(`recipes`)
       .where('public', '==', true)
@@ -223,6 +238,11 @@ export function fetchPublicRecipes() {
           let recipeData = recipe.data();
           recipeData.id = recipe.id;
 
+          if (recipeData.ingredients) {
+            const ingredients = collectIngredients(recipeData.ingredients);
+            collectedIngredients = collectedIngredients.concat(ingredients);
+          }
+
           return recipeData;
         });
 
@@ -232,6 +252,11 @@ export function fetchPublicRecipes() {
         console.log(e);
         return [];
       });
+
+    /*
+      Do something with
+      collectedIngredients
+   */
 
     dispatch({
       type: `UPDATE_PUBLIC_RECIPES`,
@@ -290,4 +315,12 @@ export function updateSelectedRecipe(recipe) {
       }
     }
   };
+}
+
+function collectIngredients(ingredients) {
+  return compact(
+    ingredients.map(ingredient => {
+      return ingredient.what;
+    })
+  );
 }

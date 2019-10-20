@@ -25,6 +25,13 @@ $transitionDuration: 0.3s;
 .transitionLeft-exit {
   transform: translateX(0);
 }
+
+.transitionLeft-exit-active,
+.transitionRight-exit-active {
+  position: relative;
+  top: var(--offsetTop);
+}
+
 .transitionLeft-exit-active {
   transform: translateX(-100%);
   transition: transform $transitionDuration;

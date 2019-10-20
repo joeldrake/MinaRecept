@@ -112,7 +112,6 @@ class Index extends React.Component<IAnyParams> {
         </div>
 
         <div className={`addPadding widthWrapper`}>
-          {user ? <h2>Publika recept</h2> : null}
           <div className={`recipesWrapper`}>{renderedPublicRecipes}</div>
         </div>
 
