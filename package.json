@@ -22,7 +22,7 @@
     "babel-plugin-styled-components": "^1.10.6",
     "firebase": "^7.1.0",
     "formik": "^1.5.8",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.21",
     "next": "^9.0.7",
     "next-redux-wrapper": "^4.0.1",
     "node-sass": "^4.12.0",
